@@ -13,12 +13,14 @@ PHASE_STARTED = 2
 PHASE_ENDGAME = 3
 PHASE_ENDED = 4
 
-NAME_CHARS = ascii_uppercase
 
+class State(dict):
+    def __getattr__(self, key):
+        return self[key]
 
-State = namedtuple('State',
-    ['phase', 'step', 'start_ts', 'bag', 'table', 'players'],
-)
+    def __setattr__(self, key, value):
+        self[key] = value
+
 
 ''' **** SCHEMA ****
     phase: phase number
@@ -27,12 +29,14 @@ State = namedtuple('State',
     bag: list of letters
     table: list of words
     players: list of (name, words) tuples
-
     nonces: dict mapping nonce key to player number
 '''
 
 def rand_chars(length):
-    return ''.join(random.choice(NAME_CHARS) for i in xrange(length))
+    return ''.join(
+        random.choice(ascii_uppercase)
+        for i in xrange(length)
+    )
 
 class Game(object):
 
@@ -49,10 +53,10 @@ class Game(object):
             step=0,
             start_ts=time.time(),
             bag=''.join(bag),
-            table=[],
+            table='',
             players=[],
+            nonces={},
         )
-        self.nonces = {}
 
     @classmethod
     def create(cls):
@@ -68,8 +72,12 @@ class Game(object):
         next_player_num = len(self.state.players)
         nonce = '%s_%03d' % (rand_chars(7), next_player_num)
         self.state.players.append((handle, []))
-        self.nonces[nonce] = next_player_num
+        self.state.nonces[nonce] = next_player_num
         return nonce
+
+    def peel(self):
+        self.state.table += self.state.bag[0]
+        self.state.bag = self.state.bag[1:]
 
     @property
     def game_key(self):
@@ -88,7 +96,7 @@ class Game(object):
         self.redis.delete(self.lock_key)
 
     def store(self, initial=False):
-        serialized = json.dumps((self.state, self.nonces))
+        serialized = json.dumps(self.state)
         success = self.redis.set(self.game_key, serialized, nx=initial)
         if success and initial:
             self.redis.expire(self.game_key, settings.GAME_TTL)
@@ -96,8 +104,7 @@ class Game(object):
 
     def load(self):
         serialized = self.redis.get(self.game_key)
-        self.state, self.nonces = json.loads(serialized)
-        self.state = State(*self.state)
+        self.state = State(**json.loads(serialized))
 
 if __name__ == '__main__':
     game = Game.create()
@@ -106,9 +113,10 @@ if __name__ == '__main__':
     game.join('Jay')
     game.join('Amy')
 
-    game.store()
+    game.peel()
+    game.peel()
 
+    game.store()
     game.load()
 
     print game.state
-    print game.nonces
