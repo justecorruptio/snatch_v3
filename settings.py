@@ -16,3 +16,4 @@ REDIS = dict(
 )
 
 GAME_TTL = 60 * 60
+LOCK_TTL = 5

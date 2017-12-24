@@ -16,7 +16,10 @@ PHASE_ENDED = 4
 NAME_CHARS = ascii_uppercase
 
 
-State = namedtuple('State', ['phase', 'step', 'start_ts', 'bag', 'table', 'players', 'nonce'])
+State = namedtuple('State',
+    ['phase', 'step', 'start_ts', 'bag', 'table', 'players'],
+)
+
 ''' **** SCHEMA ****
     phase: phase number
     step: vector clock
@@ -24,9 +27,12 @@ State = namedtuple('State', ['phase', 'step', 'start_ts', 'bag', 'table', 'playe
     bag: list of letters
     table: list of words
     players: list of (name, words) tuples
-    nonce: dict mapping nonce key to player number
+
+    nonces: dict mapping nonce key to player number
 '''
 
+def rand_chars(length):
+    return ''.join(random.choice(NAME_CHARS) for i in xrange(length))
 
 class Game(object):
 
@@ -45,8 +51,8 @@ class Game(object):
             bag=''.join(bag),
             table=[],
             players=[],
-            nonce={},
         )
+        self.nonces = {}
 
     @classmethod
     def create(cls):
@@ -54,28 +60,55 @@ class Game(object):
         game.reset()
         success = False
         while not success:
-            game.name = ''.join(random.choice(NAME_CHARS) for i in xrange(5))
+            game.name = rand_chars(5)
             success = game.store(initial=True)
         return game
 
+    def join(self, handle):
+        next_player_num = len(self.state.players)
+        nonce = '%s_%03d' % (rand_chars(7), next_player_num)
+        self.state.players.append((handle, []))
+        self.nonces[nonce] = next_player_num
+        return nonce
+
     @property
-    def redis_key(self):
+    def game_key(self):
         return 'game:%s' % (self.name,)
 
+    @property
+    def lock_key(self):
+        return 'lock:%s' % (self.name,)
+
+    def acquire(self):
+        return self.redis.set(self.lock_key, '1', nx=True,
+            ex=settings.LOCK_TTL,
+        )
+
+    def release(self):
+        self.redis.delete(self.lock_key)
+
     def store(self, initial=False):
-        serialized = json.dumps(self.state)
-        success = self.redis.set(self.redis_key, serialized, nx=initial)
+        serialized = json.dumps((self.state, self.nonces))
+        success = self.redis.set(self.game_key, serialized, nx=initial)
         if success and initial:
-            self.redis.expire(self.redis_key, settings.GAME_TTL)
+            self.redis.expire(self.game_key, settings.GAME_TTL)
         return success
 
     def load(self):
-        serialized = self.redis.get(self.redis_key)
-        self.state = State(*json.loads(serialized))
+        serialized = self.redis.get(self.game_key)
+        self.state, self.nonces = json.loads(serialized)
+        self.state = State(*self.state)
 
 if __name__ == '__main__':
     game = Game.create()
     print game.name
 
+    game.join('Jay')
+    game.join('Amy')
+
+    game.store()
+
     game.load()
+
     print game.state
+    print game.nonces
