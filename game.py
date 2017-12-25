@@ -88,8 +88,8 @@ class Game(object):
         return 'lock:%s' % (self.name,)
 
     def acquire(self):
-        return self.redis.set(self.lock_key, '1', nx=True,
-            ex=settings.LOCK_TTL,
+        return self.redis.set(self.lock_key, '1',
+            nx=True, ex=settings.LOCK_TTL,
         )
 
     def release(self):
@@ -97,10 +97,9 @@ class Game(object):
 
     def store(self, initial=False):
         serialized = json.dumps(self.state)
-        success = self.redis.set(self.game_key, serialized, nx=initial)
-        if success and initial:
-            self.redis.expire(self.game_key, settings.GAME_TTL)
-        return success
+        return self.redis.set(self.game_key, serialized,
+            nx=initial, ex=settings.GAME_TTL,
+        )
 
     def load(self):
         serialized = self.redis.get(self.game_key)
