@@ -18,7 +18,11 @@ ZPOP = """
     return nil
 """
 
-BACKOFF_PLAN = [0, 1, 2, 5, 5, 10, 10, 20, 20, 20, 50]
+BACKOFF_PLAN = (
+    [0] * 5 + [1] * 5 + [2] * 10 +
+    [5] * 15 + [10] * 20 + [20] * 30 +
+    [50]
+)
 
 
 redis = StrictRedis(**settings.REDIS)

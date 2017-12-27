@@ -26,7 +26,7 @@ class State(dict):
     step: vector clock
     start_ts: start_ts of this phase
     bag: list of letters
-    table: list of words
+    table: string of letters
     log: list of log messages, recent last
     players: list of (name, words) tuples
     nonces: dict mapping nonce key to player number
@@ -45,7 +45,7 @@ class Game(object):
             step=0,
             start_ts=time.time(),
             bag=settings.SCRABBLE_LETTERS,
-            table=[],
+            table='',
             log=[],
             players=[],
             nonces={},
@@ -91,7 +91,7 @@ class Game(object):
 
     def peel(self):
         letter = random.choice(self.state.bag)
-        self.state.table = (self.state.table + [letter])[:15]
+        self.state.table = (self.state.table + letter)[:15]
         bag = list(self.state.bag)
         bag.remove(letter)
         self.state.bag = ''.join(bag)
@@ -118,7 +118,8 @@ class Game(object):
             fabric.defer_job(
                 settings.QUEUE_NAME,
                 Job(action='end', name=self.name),
-                delay=settings.ENDGAME_TIME - delayed_time + 1,
+                # fix a tiny race condition
+                delay=settings.ENDGAME_TIME - delayed_time + .01,
             )
             return
 
@@ -160,7 +161,9 @@ class Game(object):
                     break
             # table and player words are mutually exclusive.
             if w in self.state.table:
-                self.state.table.remove(w)
+                table = list(self.state.table)
+                table.remove(w)
+                self.state.table = ''.join(table)
 
         if not status:
             status = ('play', target, player_num)
