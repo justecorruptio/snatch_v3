@@ -21,3 +21,5 @@ RESULT_TTL = 15
 
 QUEUE_NAME = 'snatchq'
 PEEL_DELAY = 6.1
+
+DEBUG = True

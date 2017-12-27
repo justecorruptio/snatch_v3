@@ -1,4 +1,5 @@
 import json
+import sys
 
 from fabric import fabric
 from game import Game
@@ -19,12 +20,14 @@ class Daemon(object):
     def run_forever(self):
         while self.running:
             job = fabric.poll_job(settings.QUEUE_NAME)
-            print 'JOB:', job.data
+            if settings.DEBUG:
+                sys.stderr.write('JOB: ' + str(job.data) + '\n')
             try:
                 Game.execute(job)
             except Exception, e:
-                import traceback
-                print traceback.format_exc()
+                if settings.DEBUG:
+                    import traceback
+                    sys.stderr.write(traceback.format_exc() + '\n')
 
 
 if __name__ == '__main__':

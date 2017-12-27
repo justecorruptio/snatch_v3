@@ -27,6 +27,7 @@ class State(dict):
     start_ts: start_ts of this phase
     bag: list of letters
     table: list of words
+    log: list of log messages, recent last
     players: list of (name, words) tuples
     nonces: dict mapping nonce key to player number
 '''
@@ -46,7 +47,8 @@ class Game(object):
             step=0,
             start_ts=time.time(),
             bag=''.join(bag),
-            table='',
+            table=[],
+            log=[],
             players=[],
             nonces={},
         )
@@ -68,6 +70,9 @@ class Game(object):
         nonce = '%s_%03d' % (rand_chars(7), next_player_num)
         self.state.players.append((handle, []))
         self.state.nonces[nonce] = next_player_num
+
+        self.log(('join', handle))
+
         return {'nonce': nonce}
 
     def start(self):
@@ -75,7 +80,7 @@ class Game(object):
         self.state.start_ts = time.time()
 
     def peel(self):
-        self.state.table += self.state.bag[0]
+        self.state.table += [self.state.bag[0]]
         self.state.bag = self.state.bag[1:]
         if len(self.state.bag) == 0:
             self.state.phase = PHASE_ENDGAME
@@ -89,6 +94,15 @@ class Game(object):
         player_num = self.state.nonces.get(none, None)
         if player_num is None:
             return {'error': 'invalid player'}
+
+        if not anagram.is_word(word):
+            return {'error': '%s is not a word' % (word,)}
+
+        valid = anagram.check(
+            self.state.table,
+            sum([words for _, words in self.state.players], []),
+            word,
+        )
 
         return {}
 
@@ -122,6 +136,9 @@ class Game(object):
             if has_lock:
                 fabric.release(game.lock_key)
 
+    def log(self, message):
+        self.state.log = self.state.log[-4:] + [message]
+
     @property
     def game_key(self):
         return 'game:%s' % (self.name,)
@@ -139,20 +156,3 @@ class Game(object):
     def load(self):
         serialized = fabric.load(self.game_key)
         self.state = State(**json.loads(serialized))
-
-'''
-if __name__ == '__main__':
-    game = Game.create()
-    print game.name
-
-    game.join('Jay')
-    game.join('Amy')
-
-    game.peel()
-    game.peel()
-
-    game.store()
-    game.load()
-
-    print game.state
-'''
