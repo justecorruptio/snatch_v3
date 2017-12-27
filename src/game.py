@@ -178,6 +178,8 @@ class Game(object):
         self.state.players[player_num][1].append(target)
         self.state.step += 1
 
+        self.log(*status)
+
         if self.state.phase == PHASE_ENDGAME:
             self.state.start_ts = time.time()
 

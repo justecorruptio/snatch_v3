@@ -59,6 +59,11 @@ class Anagram(object):
             for comb in combinations(word_hashes, i):
                 p = product([hx for w, hx in comb])
                 d, m = divmod(target_hx, p)
+
+                # disallow just plain stealing
+                if len(comb) == 1 and d == 1:
+                    continue
+
                 if m == 0 and table_hx % d == 0:
                     words = [w for w, hx in comb]
                     return words + self.subtract(target, *words)
