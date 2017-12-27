@@ -28,13 +28,15 @@ class Daemon(object):
             except Exception, e:
                 if settings.DEBUG:
                     import traceback
+                    sys.stderr.write('ERROR! ' + str(job.data) + '\n')
                     sys.stderr.write(traceback.format_exc() + '\n')
-            if settings.DEBUG:
-                sys.stderr.write('%0.2f + %0.4f | %s\n' % (
-                    start_ts,
-                    end_ts - start_ts,
-                    job.data,
-                ))
+            else:
+                if settings.DEBUG:
+                    sys.stderr.write('%0.2f + %0.4f | %s\n' % (
+                        start_ts,
+                        end_ts - start_ts,
+                        job.data,
+                    ))
 
 
 if __name__ == '__main__':

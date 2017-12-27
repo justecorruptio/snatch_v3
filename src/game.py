@@ -20,6 +20,12 @@ class State(dict):
     def __setattr__(self, key, value):
         self[key] = value
 
+    def cleaned(self):
+        ret = dict(self)
+        if 'nonces' in ret:
+            ret.pop('nonces')
+        return ret
+
 
 ''' **** SCHEMA ****
     phase: phase number
@@ -194,13 +200,23 @@ class Game(object):
                 return
 
             game.load()
+            start_step = game.state.step
+
             try:
                 result = getattr(game, action)(*args)
             except Exception, e:
                 result = {'error': str(e)}
             if result is not None:
                 job.write_result(result)
+
+            end_step = game.state.step
             game.store()
+
+            if start_step != end_step:
+                fabric.notify(
+                    game.channel_name,
+                    json.dumps(game.state.cleaned()),
+                )
 
         finally:
             if has_lock:
@@ -218,6 +234,10 @@ class Game(object):
     @property
     def lock_key(self):
         return 'lock:%s' % (self.name,)
+
+    @property
+    def channel_key(self):
+        return 'channel:%s' % (self.name,)
 
     def store(self, initial=False):
         serialized = json.dumps(self.state)

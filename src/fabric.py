@@ -104,18 +104,42 @@ class Fabric(object):
         return redis.get(key)
 
     def acquire(self, key):
-        return redis.set(key, '1',
-            nx=True, ex=settings.LOCK_TTL,
-        )
+        return redis.set(key, '1', nx=True, ex=settings.LOCK_TTL)
 
     def release(self, key):
         redis.delete(key)
+
+    def wait(self, key, timeout=60 * 10):
+        pubsub = redis.pubsub()
+        pubsub.subscribe(key)
+
+        start_ts = time.time()
+        try:
+            while True:
+                res = pubsub.parse_response(block=False, timeout=.1)
+                now = time.time()
+
+                if now - start_ts > timeout:
+                    return None
+
+                if res is None:
+                    continue
+
+                msg_type, channel, message = res
+                if msg_type == 'message':
+                    return message
+        finally:
+            pubsub.close()
+
+    def notify(self, key, message):
+        redis.publish(key, message)
 
 fabric = Fabric()
 
 if __name__ == '__main__':
     f = fabric
 
+    '''
     a = Job(name='second')
     f.defer_job('A', a, delay=2.5)
     b = Job(name='first')
@@ -133,3 +157,4 @@ if __name__ == '__main__':
 
     print b.result
     print a.result
+    '''
