@@ -79,4 +79,4 @@ if __name__ == '__main__':
     #res = anagram.check(list('TYBE'), ['VAIN', 'GAS'], 'VANITY')
     res = anagram.check(list('EMPSTH'), ['HEED', 'BAD'], 'BEHEADED')
     b = time.time()
-    print res, (b - a) * 1000
+    print res, '%0.2f ms' % ((b - a) * 1000,)

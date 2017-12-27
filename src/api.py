@@ -7,6 +7,7 @@ import settings
 urls = (
     '/game', 'Game',
     '/game/([a-zA-Z]{5})/join', 'GameJoin',
+    '/game/([a-zA-Z]{5})/start', 'GameStart',
     '/game/([a-zA-Z]{5})/play', 'GamePlay',
 )
 
@@ -25,6 +26,12 @@ class GameJoin(object):
         if not handle:
             return '{"error":"handle missing"}'
         job = Job(action='join', name=name, args=[handle])
+        fabric.defer_job(settings.QUEUE_NAME, job)
+        return json.dumps(job.result)
+
+class GameStart(object):
+    def POST(self, name):
+        job = Job(action='start', name=name)
         fabric.defer_job(settings.QUEUE_NAME, job)
         return json.dumps(job.result)
 

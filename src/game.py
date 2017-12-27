@@ -40,13 +40,11 @@ class Game(object):
         self.state = None
 
     def reset(self):
-        bag = list(settings.SCRABBLE_LETTERS)
-        random.shuffle(bag)
         self.state = State(
             phase=PHASE_LOBBY,
             step=0,
             start_ts=time.time(),
-            bag=''.join(bag),
+            bag=settings.SCRABBLE_LETTERS,
             table=[],
             log=[],
             players=[],
@@ -70,39 +68,107 @@ class Game(object):
         nonce = '%s_%03d' % (rand_chars(7), next_player_num)
         self.state.players.append((handle, []))
         self.state.nonces[nonce] = next_player_num
+        self.state.step += 1
 
-        self.log(('join', handle))
+        self.log('join', handle)
 
         return {'nonce': nonce}
 
     def start(self):
         self.state.phase = PHASE_STARTED
         self.state.start_ts = time.time()
+        self.state.step += 1
+
+        self.log('start')
+
+        fabric.defer_job(
+            settings.QUEUE_NAME,
+            Job(action='peel', name=self.name),
+            delay=settings.PEEL_DELAY,
+        )
+
+        return {}
 
     def peel(self):
-        self.state.table += [self.state.bag[0]]
-        self.state.bag = self.state.bag[1:]
+        letter = random.choice(self.state.bag)
+        self.state.table = (self.state.table + [letter])[:15]
+        bag = list(self.state.bag)
+        bag.remove(letter)
+        self.state.bag = ''.join(bag)
+        self.state.step += 1
+
         if len(self.state.bag) == 0:
             self.state.phase = PHASE_ENDGAME
             self.state.start_ts = time.time()
+            self.log('endgame')
+            # calling this now is guaranteed to not actually end
+            self.end()
+        else:
+            fabric.defer_job(
+                settings.QUEUE_NAME,
+                Job(action='peel', name=self.name),
+                delay=settings.PEEL_DELAY,
+            )
+
+        return None
 
     def end(self):
+        delayed_time = time.time() - self.state.start_ts
+        if delayed_time < settings.ENDGAME_TIME:
+            fabric.defer_job(
+                settings.QUEUE_NAME,
+                Job(action='end', name=self.name),
+                delay=settings.ENDGAME_TIME - delayed_time + 1,
+            )
+            return
+
         self.state.phase = PHASE_ENDED
         self.state.start_ts = time.time()
+        self.state.step += 1
+        self.log('end')
 
-    def play(self, nonce, word):
+        return None
+
+    def play(self, nonce, target):
         player_num = self.state.nonces.get(none, None)
+
+        if len(target) < settings.MIN_WORD_LENGTH:
+            return {'error': 'minimum word length is %s' % (
+                settings.MIN_WORD_LENGTH,
+            )}
         if player_num is None:
             return {'error': 'invalid player'}
 
-        if not anagram.is_word(word):
-            return {'error': '%s is not a word' % (word,)}
+        if not anagram.is_word(target):
+            return {'error': '%s is not a word' % (target,)}
 
-        valid = anagram.check(
+        how = anagram.check(
             self.state.table,
             sum([words for _, words in self.state.players], []),
-            word,
+            target,
         )
+
+        if how is None:
+            return {}
+
+        status = None
+        for w in how:
+            for i, (_, words) in enumerate(self.state.players):
+                if w in words:
+                    words.remove(w)
+                    status = ('steal', target, player_num, w, i)
+                    break
+            # table and player words are mutually exclusive.
+            if w in self.state.table:
+                self.state.table.remove(w)
+
+        if not status:
+            status = ('play', target, player_num)
+
+        self.state.step += 1
+
+        if self.state.phase == PHASE_ENDGAME:
+            self.state.start_ts = time.time()
 
         return {}
 
@@ -128,16 +194,19 @@ class Game(object):
             try:
                 result = getattr(game, action)(*args)
             except Exception, e:
-                result = {'error': e}
-            job.write_result(result)
+                result = {'error': str(e)}
+            if result is not None:
+                job.write_result(result)
             game.store()
 
         finally:
             if has_lock:
                 fabric.release(game.lock_key)
 
-    def log(self, message):
-        self.state.log = self.state.log[-4:] + [message]
+    def log(self, *message):
+        self.state.log = self.state.log[-4:] + [
+            (self.state.step,) + tuple(message),
+        ]
 
     @property
     def game_key(self):
