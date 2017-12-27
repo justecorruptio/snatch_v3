@@ -49,7 +49,19 @@ class GameStart(object):
 
 class GamePlay(object):
     def POST(self, name):
-        return '{}'
+        data = json.loads(web.data())
+        nonce = data.get('nonce', None)
+        if not nonce:
+            return '{"error":"nonce missing"}'
+
+        word = data.get('word', None)
+        if not word:
+            return '{"error":"word missing"}'
+        word = word.upper()
+
+        job = Job(action='play', name=name, args=[nonce, word])
+        fabric.defer_job(settings.QUEUE_NAME, job)
+        return json.dumps(job.result)
 
 if __name__ == '__main__':
     app = web.application(urls, globals())

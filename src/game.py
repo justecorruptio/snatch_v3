@@ -2,6 +2,7 @@ import json
 import random
 import time
 
+from anagram import anagram
 from fabric import fabric, Job
 import settings
 from utils import rand_chars
@@ -97,7 +98,7 @@ class Game(object):
 
     def peel(self):
         letter = random.choice(self.state.bag)
-        self.state.table = (self.state.table + letter)[:15]
+        self.state.table = self.state.table + letter
         bag = list(self.state.bag)
         bag.remove(letter)
         self.state.bag = ''.join(bag)
@@ -137,7 +138,7 @@ class Game(object):
         return None
 
     def play(self, nonce, target):
-        player_num = self.state.nonces.get(none, None)
+        player_num = self.state.nonces.get(nonce, None)
 
         if len(target) < settings.MIN_WORD_LENGTH:
             return {'error': 'minimum word length is %s' % (
@@ -174,6 +175,7 @@ class Game(object):
         if not status:
             status = ('play', target, player_num)
 
+        self.state.players[player_num][1].append(target)
         self.state.step += 1
 
         if self.state.phase == PHASE_ENDGAME:
@@ -199,13 +201,14 @@ class Game(object):
                 job.retry()
                 return
 
-            game.load()
-            start_step = game.state.step
-
             try:
+                game.load()
+                start_step = game.state.step
+
                 result = getattr(game, action)(*args)
             except Exception, e:
                 result = {'error': str(e)}
+
             if result is not None:
                 job.write_result(result)
 
@@ -214,7 +217,7 @@ class Game(object):
 
             if start_step != end_step:
                 fabric.notify(
-                    game.channel_name,
+                    game.channel_key,
                     json.dumps(game.state.cleaned()),
                 )
 
@@ -247,4 +250,6 @@ class Game(object):
 
     def load(self):
         serialized = fabric.load(self.game_key)
+        if serialized is None:
+            raise Exception('game not found')
         self.state = State(**json.loads(serialized))
