@@ -1,10 +1,10 @@
 from collections import namedtuple
 import json
 import random
-from redis import StrictRedis
 from string import digits, ascii_uppercase
 import time
 
+from fabric import Fabric
 import settings
 
 
@@ -43,7 +43,7 @@ class Game(object):
     def __init__(self, name=None):
         self.name = name
         self.state = None
-        self.redis = StrictRedis(**settings.REDIS)
+        self.fabric = Fabric()
 
     def reset(self):
         bag = list(settings.SCRABBLE_LETTERS)
@@ -104,12 +104,12 @@ class Game(object):
 
     def store(self, initial=False):
         serialized = json.dumps(self.state)
-        return self.redis.set(self.game_key, serialized,
+        return self.fabric.store(self.game_key, serialized,
             nx=initial, ex=settings.GAME_TTL,
         )
 
     def load(self):
-        serialized = self.redis.get(self.game_key)
+        serialized = self.fabric.load(self.game_key)
         self.state = State(**json.loads(serialized))
 
 if __name__ == '__main__':
