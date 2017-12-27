@@ -62,6 +62,8 @@ class Game(object):
         return game
 
     def join(self, handle):
+        if any(p[0] == handle for p in self.state.players):
+            return {'error': 'duplicate name'}
         next_player_num = len(self.state.players)
         nonce = '%s_%03d' % (rand_chars(7), next_player_num)
         self.state.players.append((handle, []))
@@ -84,7 +86,11 @@ class Game(object):
         self.state.start_ts = time.time()
 
     def play(self, nonce, word):
-        pass
+        player_num = self.state.nonces.get(none, None)
+        if player_num is None:
+            return {'error': 'invalid player'}
+
+        return {}
 
     @classmethod
     def execute(cls, job):
