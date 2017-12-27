@@ -17,3 +17,7 @@ REDIS = dict(
 
 GAME_TTL = 60 * 60
 LOCK_TTL = 5
+RESULT_TTL = 15
+
+QUEUE_NAME = 'snatchq'
+PEEL_DELAY = 6.1

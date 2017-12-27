@@ -1,11 +1,10 @@
-from collections import namedtuple
 import json
 import random
-from string import digits, ascii_uppercase
 import time
 
 from fabric import Fabric
 import settings
+from utils import rand_chars
 
 
 PHASE_LOBBY = 1
@@ -32,11 +31,6 @@ class State(dict):
     nonces: dict mapping nonce key to player number
 '''
 
-def rand_chars(length):
-    return ''.join(
-        random.choice(ascii_uppercase)
-        for i in xrange(length)
-    )
 
 class Game(object):
 
@@ -83,24 +77,27 @@ class Game(object):
         self.state.table += self.state.bag[0]
         self.state.bag = self.state.bag[1:]
         if len(self.state.bag) == 0:
-            self.state.phase = PHASE_ENDED
+            self.state.phase = PHASE_ENDGAME
             self.state.start_ts = time.time()
+
+    def end(self):
+        self.state.phase = PHASE_ENDED
+        self.state.start_ts = time.time()
+
+    def play(self, nonce, word):
+        pass
+
+    @classmethod
+    def execute(self, job):
+        pass
+
+    @classmethod
+    def defer(self, job):
+        pass
 
     @property
     def game_key(self):
         return 'game:%s' % (self.name,)
-
-    @property
-    def lock_key(self):
-        return 'lock:%s' % (self.name,)
-
-    def acquire(self):
-        return self.redis.set(self.lock_key, '1',
-            nx=True, ex=settings.LOCK_TTL,
-        )
-
-    def release(self):
-        self.redis.delete(self.lock_key)
 
     def store(self, initial=False):
         serialized = json.dumps(self.state)
