@@ -34,6 +34,10 @@ class Job(object):
     def __init__(self, **data):
         self.data = data
         self.result_key = None
+        self.fabric_key = None
+
+    def retry(self, delay=.01):
+        fabric.defer_job(self.fabric_key, self, delay=delay)
 
     def write_result(self, result):
         if self.result_key is None:
@@ -51,9 +55,7 @@ class Job(object):
 
 
 class Fabric(object):
-
-    def __init__(self):
-        pass
+    """Singleton?"""
 
     def poll(self, key):
         tries = 0
@@ -81,11 +83,12 @@ class Fabric(object):
         data, result_key = json.loads(message)
         job = Job(**data)
         job.result_key = result_key
+        job.fabric_key = key
         return job
 
     def defer_job(self, key, job, delay=0):
         if job.result_key is None:
-            job.result_key = rand_chars(16)
+            job.result_key = 'result:' + rand_chars(16)
 
         message = json.dumps((job.data, job.result_key))
         return self.defer(key, message, delay=delay)
@@ -101,20 +104,28 @@ class Fabric(object):
             nx=True, ex=settings.LOCK_TTL,
         )
 
-    def relase(self, key):
-        redis.delete(self.lock_key)
+    def release(self, key):
+        redis.delete(key)
+
+fabric = Fabric()
 
 if __name__ == '__main__':
-    f = Fabric()
+    f = fabric
 
     a = Job(name='second')
-    f.defer_job('A', a, delay=2)
+    f.defer_job('A', a, delay=2.5)
     b = Job(name='first')
     f.defer_job('A', b, delay=1)
 
+    job = f.poll_job('A')
+    job.retry(delay=2)
+
     for i in xrange(2):
         job = f.poll_job('A')
-        job.write_result('RAN %s' % (job.data['name'],))
+        job.write_result('RAN %s %s' % (
+            job.data['name'],
+            time.time(),
+        ))
 
     print b.result
     print a.result

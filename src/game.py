@@ -2,7 +2,7 @@ import json
 import random
 import time
 
-from fabric import Fabric
+from fabric import fabric, Job
 import settings
 from utils import rand_chars
 
@@ -37,7 +37,6 @@ class Game(object):
     def __init__(self, name=None):
         self.name = name
         self.state = None
-        self.fabric = Fabric()
 
     def reset(self):
         bag = list(settings.SCRABBLE_LETTERS)
@@ -67,7 +66,7 @@ class Game(object):
         nonce = '%s_%03d' % (rand_chars(7), next_player_num)
         self.state.players.append((handle, []))
         self.state.nonces[nonce] = next_player_num
-        return nonce
+        return {'nonce': nonce}
 
     def start(self):
         self.state.phase = PHASE_STARTED
@@ -88,27 +87,54 @@ class Game(object):
         pass
 
     @classmethod
-    def execute(self, job):
-        pass
+    def execute(cls, job):
+        action = job.data['action']
+        if action == 'create':
+            game = cls.create()
+            job.write_result({'name': game.name})
+            return
+        name = job.data['name']
+        args = job.data.get('args', [])
+        game = cls(name)
 
-    @classmethod
-    def defer(self, job):
-        pass
+        try:
+            has_lock = False
+            has_lock = fabric.acquire(game.lock_key)
+            if not has_lock:
+                job.retry()
+                return
+
+            game.load()
+            try:
+                result = getattr(game, action)(*args)
+            except Exception, e:
+                result = {'error': e}
+            job.write_result(result)
+            game.store()
+
+        finally:
+            if has_lock:
+                fabric.release(game.lock_key)
 
     @property
     def game_key(self):
         return 'game:%s' % (self.name,)
 
+    @property
+    def lock_key(self):
+        return 'lock:%s' % (self.name,)
+
     def store(self, initial=False):
         serialized = json.dumps(self.state)
-        return self.fabric.store(self.game_key, serialized,
+        return fabric.store(self.game_key, serialized,
             nx=initial, ex=settings.GAME_TTL,
         )
 
     def load(self):
-        serialized = self.fabric.load(self.game_key)
+        serialized = fabric.load(self.game_key)
         self.state = State(**json.loads(serialized))
 
+'''
 if __name__ == '__main__':
     game = Game.create()
     print game.name
@@ -123,3 +149,4 @@ if __name__ == '__main__':
     game.load()
 
     print game.state
+'''
