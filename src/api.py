@@ -63,6 +63,19 @@ class GamePlay(object):
         fabric.defer_job(settings.QUEUE_NAME, job)
         return json.dumps(job.result)
 
+class HeadersMiddleware(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+
+        def custom_start_response(status, headers, exc_info=None):
+            headers.append(('Access-Control-Allow-Origin', '*'))
+            headers.append(('Content-Type', 'application/json'))
+            return start_response(status, headers, exc_info)
+
+        return self.app(environ, custom_start_response)
+
 if __name__ == '__main__':
     app = web.application(urls, globals())
-    app.run()
+    app.run(HeadersMiddleware)

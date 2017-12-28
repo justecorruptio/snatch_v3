@@ -25,6 +25,8 @@ class State(dict):
         ret = dict(self)
         if 'nonces' in ret:
             ret.pop('nonces')
+        if 'bag' in ret:
+            ret['bag'] = len(ret['bag'])
         return ret
 
 
