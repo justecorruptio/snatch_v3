@@ -21,8 +21,9 @@ function startGame() {
     apiPollGame();
 }
 
-function renderBoard() {
+function renderBoard(data) {
     $('#snatch-display-name').text(name);
+    $('#snatch-display-bag').text(data.bag);
 }
 
 function apiCreateGame() {
@@ -92,5 +93,7 @@ $(function() {
     // XXX:testing
     name = 'XKJRN';
     showPage(1);
-    renderBoard();
+    renderBoard({
+        bag: 56
+    });
 });

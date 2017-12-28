@@ -3,7 +3,8 @@
     <head>
         <title>Snatch!</title>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1,
+            shrink-to-fit=no, user-scalable=no">
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet"
@@ -17,6 +18,35 @@
             }
             input:invalid {
                 color: red;
+            }
+            .snatch-tiles span {
+                color: #fff;
+                background-color: #007bff;
+                display: inline-block;
+                font-size: 175%;
+                font-weight: 700;
+                line-height: 1;
+                text-align: center;
+                white-space: nowrap;
+                vertical-align: baseline;
+                border-radius: .25rem;
+                height: 2rem;
+                width: 2rem;
+                padding: .1rem;
+            }
+            .snatch-tiles {
+                margin-left: .25rem;
+                margin-bottom: .25rem;
+            }
+            .snatch-handle {
+                line-height: 1;
+                height: 1.5rem;
+            }
+            flexbreak {
+                flex-basis: 100%;
+                width: 0px;
+                height: 0px;
+                overflow: hidden;
             }
         </style>
     </head>
@@ -75,15 +105,25 @@
         </div>
 
         <div class="container p-1 snatch-page snatch-page-1 collapse">
-            <div class="row">
-                <div class="col">
-                    <h5>
-                        Snatch!
-                        <small class="text-muted">
-                            <span class="d-none d-sm-inline">Game ID: </span>
-                            <span id="snatch-display-name"></span>
-                        </small>
-                    </h5>
+            <div class="d-flex align-items-baseline">
+                <span class="px-1">
+                    <span id="snatch-display-bag"></span> Tiles Left
+                </span>
+                <h5 class="ml-auto">Snatch!</h5>
+                <span class="text-muted px-1">
+                    Game ID: <span id="snatch-display-name"></span>
+                </span>
+            </div>
+            <div class="d-flex flex-wrap align-items-center">
+                <div class="snatch-tiles"><span>M</span></div>
+                <div class="snatch-tiles"><span>O</span></div>
+                <flexbreak class="pt-sm-2 d-none d-sm-inline"></flexbreak>
+                <b class="snatch-handle ml-1">Jay(5)</b>
+                <div class="snatch-tiles">
+                    <span>C</span><span>O</span><span>V</span><span>E</span><span>N</span>
+                </div>
+                <div class="snatch-tiles">
+                    <span>C</span><span>H</span><span>R</span><span>I</span><span>S</span><span>T</span><span>M</span><span>A</span><span>S</span>
                 </div>
             </div>
         </div>
