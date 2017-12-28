@@ -19,29 +19,39 @@
             input:invalid {
                 color: red;
             }
-            .snatch-tiles span {
+            .snatch-tile {
                 color: #fff;
-                background-color: #007bff;
+                background-color: #555;
                 display: inline-block;
-                font-size: 175%;
                 font-weight: 700;
                 line-height: 1;
                 text-align: center;
                 white-space: nowrap;
                 vertical-align: baseline;
                 border-radius: .25rem;
-                height: 2rem;
-                width: 2rem;
-                padding: .1rem;
-            }
-            .snatch-tiles {
+                padding: .1rem .25rem .1rem .25rem;
                 margin-left: .25rem;
                 margin-bottom: .25rem;
+
+                height: 1.25rem;
+                min-width: 1.25rem;
+                font-size: 100%;
             }
-            .snatch-handle {
-                line-height: 1;
-                height: 1.5rem;
+
+            .snatch-tile-letter {
+                width: 1.25rem;
+                padding: .1rem;
             }
+
+            .snatch-tile-p-0 { background-color: #007bff; }
+            .snatch-tile-p-1 { background-color: #7b00ff; }
+            .snatch-tile-p-2 { background-color: #ff00d9; }
+            .snatch-tile-p-3 { background-color: #ff1500; }
+            .snatch-tile-p-4 { background-color: #ff8000; }
+            .snatch-tile-p-5 { background-color: #ccc500; }
+            .snatch-tile-p-6 { background-color: #00ff3a; }
+            .snatch-tile-p-7 { background-color: #00ccb8; }
+
             flexbreak {
                 flex-basis: 100%;
                 width: 0px;
@@ -88,8 +98,8 @@
                 </div>
                 <div class="d-flex mb-3">
                     <span class="input-group">
-                        <input id="snatch-input-name" type="text" class="form-control
-                            " placeholder="eg. CIOZD"
+                        <input id="snatch-input-name" type="text" class="form-control"
+                            placeholder="eg. CIOZD"
                             autocomplete="off" autocorrect="off"
                             autocapitalize="off" spellcheck="false"
                             pattern="[A-Za-z]{5}" maxlength="5"
@@ -114,19 +124,39 @@
                     Game ID: <span id="snatch-display-name"></span>
                 </span>
             </div>
-            <div class="d-flex flex-wrap align-items-center">
-                <div class="snatch-tiles"><span>M</span></div>
-                <div class="snatch-tiles"><span>O</span></div>
-                <flexbreak class="pt-sm-2 d-none d-sm-inline"></flexbreak>
-                <b class="snatch-handle ml-1">Jay(5)</b>
-                <div class="snatch-tiles">
-                    <span>C</span><span>O</span><span>V</span><span>E</span><span>N</span>
+            <div id="snatch-display-table" class="d-flex flex-wrap align-items-center mb-2">
+            </div>
+            <div id="snatch-display-players" class="ml-1">
+            </div>
+
+            <div class="snatch-area-inputs snatch-area-inputs-start">
+                <div class="d-flex flex-row mt-2">
+                    <div class="mx-1">
+                        <button id="snatch-button-start" class="btn btn-primary">
+                            Start Game
+                        </button>
+                    </div>
                 </div>
-                <div class="snatch-tiles">
-                    <span>C</span><span>H</span><span>R</span><span>I</span><span>S</span><span>T</span><span>M</span><span>A</span><span>S</span>
+            </div>
+
+            <div class="snatch-area-inputs snatch-area-inputs-play">
+                <div class="d-flex flex-row mt-2">
+                    <div class="ml-1">
+                        <input id="snatch-input-word" type="text" class="form-control"
+                            placeholder="Enter a word"
+                            autocomplete="off" autocorrect="off"
+                            autocapitalize="off" spellcheck="false"
+                            pattern="[A-Za-z]{4,15}" maxlength="15"
+                        ></input>
+                    </div>
+                    <div class="mx-2">
+                        <button id="snatch-button-play" class="btn btn-primary">
+                            Snatch!
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-  </body>
+    </body>
 </html>
