@@ -1,0 +1,8 @@
+backend:
+    /start should require the nonce
+
+frontend:
+    handle endgame
+    handle alerts
+    reconnections
+    press enter to submit
