@@ -12,7 +12,7 @@ ZPOP = """
     local zhead = redis.call('ZRANGE', zkey, 0, 0, 'WITHSCORES')
     if zhead[1] ~= nil and tonumber(zhead[2]) <= tonumber(now_ts) then
         redis.call('ZREM', zkey, zhead[1])
-        return zhead[1]
+        return zhead
     end
 
     return nil
@@ -62,12 +62,16 @@ class Fabric(object):
     """Singleton?"""
 
     def poll(self, key):
+        """returns a tuple of message and planned time."""
         tries = 0
         while True:
             now_ms = int(time.time() * 1000)
-            mesg = redis.zpop(args=[key, now_ms])
-            if mesg is not None:
-                return mesg
+            res = redis.zpop(args=[key, now_ms])
+
+            if res is not None:
+                mesg, planned_ms = res
+                return mesg, int(planned_ms) / 1000.
+
             if tries < len(BACKOFF_PLAN):
                 backoff_ms = BACKOFF_PLAN[tries]
             else:
@@ -83,11 +87,12 @@ class Fabric(object):
 
 
     def poll_job(self, key):
-        message = self.poll(key)
+        message, planned_ts = self.poll(key)
         data, result_key = json.loads(message)
         job = Job(**data)
         job.result_key = result_key
         job.fabric_key = key
+        job.planned_ts = planned_ts
         return job
 
     def defer_job(self, key, job, delay=0):

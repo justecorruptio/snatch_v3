@@ -23,6 +23,7 @@ class Daemon(object):
             job = fabric.poll_job(settings.QUEUE_NAME)
             try:
                 start_ts = time.time()
+                planned_ts = job.planned_ts
                 Game.execute(job)
                 end_ts = time.time()
             except Exception, e:
@@ -32,11 +33,14 @@ class Daemon(object):
                     sys.stderr.write(traceback.format_exc() + '\n')
             else:
                 if settings.DEBUG:
-                    sys.stderr.write('%0.2f + %0.4f | %s\n' % (
-                        start_ts,
-                        end_ts - start_ts,
-                        job.data,
-                    ))
+                    sys.stderr.write(
+                        '%0.2f + %0.4f (%0.4f off) | %s\n' % (
+                            start_ts,
+                            end_ts - start_ts,
+                            start_ts - planned_ts,
+                            job.data,
+                        ),
+                    )
 
 
 if __name__ == '__main__':
