@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Hello, world!</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+            integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+            crossorigin="anonymous"
+        >
+        <style>
+            body {
+                height: 100vh;
+            }
+            input:invalid {
+                color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container snatch-main-menu">
+            <div class="row">
+                <div class="col mb-5 mt-5">
+                    <h1>Snatch!</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mb-3">
+                    <input type="text" class="form-control" placeholder="Enter a User Name"
+                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                    ></input>
+                </div>
+            </div>
+            <div class="d-flex flex-row">
+                <div class="d-flex mb-3">
+                    <button class="btn btn-primary">New Game</button>
+                </div>
+                <div class="d-flex pt-2 px-3 mb-3">
+                    or
+                </div>
+                <div class="d-flex mb-3">
+                    <span class="input-group">
+                        <input type="text" class="form-control" placeholder="eg. CIOZD"
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            pattern="[A-Za-z]{5}" maxlength="5"
+                        ></input>
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button">Join</button>
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"
+        ></script>
+        <script>
+            $('body').on('touchmove', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+            });
+        </script>
+
+  </body>
+</html>
