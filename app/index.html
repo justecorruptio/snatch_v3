@@ -15,6 +15,7 @@
         <style>
             body {
                 height: 100vh;
+                -webkit-user-select: none;
             }
             input:invalid {
                 color: red;
@@ -54,6 +55,13 @@
 
             #snatch-keyboard div {
                 width: calc(100vw / 9 - .4rem);
+                height: 2.5rem;
+            }
+            #snatch-keyboard>div {
+                margin: .2rem;
+                position: relative;
+            }
+            #snatch-keyboard>div>div {
                 color: #555;
                 background-color: #eee;
                 border-style: solid;
@@ -66,14 +74,15 @@
                 white-space: nowrap;
                 vertical-align: baseline;
                 border-radius: .25rem;
-                padding: .1rem .25rem .1rem .25rem;
-                margin: .2rem;
-
-                height: 2.5rem;
                 font-size: 120%;
+                pointer-events: none;
             }
-            #snatch-keyboard div:active {
-                background-color: #cf5;
+            #snatch-keyboard>div:active>div {
+                background-color: #7b00ff;
+                color: #fff;
+                position: absolute;
+                top: -2rem;
+                height: 4.5rem;
             }
             @media (max-width: 575.99px) {
                 .snatch-area-inputs-play {

@@ -189,14 +189,14 @@ $(function() {
 
     for(var i = 0; i < 27; i++) {
         $('#snatch-keyboard').append(
-            $(`<div>${"QWERTYUIOASDFGHJKLZXCVBNMP<"[i]}</div>`)
+            $(`<div><div>${"QWERTYUIOASDFGHJKLZXCVBNMP<"[i]}</div></div>`)
         );
     }
-     $('#snatch-keyboard div').on('click', function() {
+     $('#snatch-keyboard>div').on('click', function() {
         var $el = $(this),
             $word = $('#snatch-input-word'),
-            word = $word.val();
-            c = $el.text();
+            word = $word.val(),
+            c = $el.find('div').text();
         if(c == '<') {
             if(word.length > 0) {
                 $word.val(word.substr(0, word.length - 1));
