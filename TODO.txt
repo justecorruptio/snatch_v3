@@ -1,8 +1,8 @@
 backend:
+    return error on when word not stealable
     support different game settings
     bots
 
 frontend:
     handle endgame
-    handle alerts
     reconnections
