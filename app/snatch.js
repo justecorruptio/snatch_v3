@@ -236,7 +236,7 @@ function apiPollGame(step, halt) {
         if(text_status != 'abort') {
             alert('Network Error, reconnecting...');
             setTimeout(function() {
-                apiPollGame(step);
+                apiPollGame();
             }, 1000);
         }
     });

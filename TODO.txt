@@ -7,4 +7,4 @@ backend:
 frontend:
     debounce
     spinner for high latency on mobile.
-    bug: starting a new game flashes old game.
+    bug: logging n quick succession looks weird
