@@ -25,6 +25,8 @@ class State(dict):
     def cleaned(self):
         ret = dict(self)
         if 'nonces' in ret:
+            if 'BOT' in ret['nonces']:
+                ret['has_bot'] = True
             ret.pop('nonces')
         if 'bag' in ret:
             ret['bag'] = len(ret['bag'])

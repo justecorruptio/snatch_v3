@@ -35,9 +35,9 @@ DEBUG = True
 
 BOTS = {
     # name: (level, loop_ttl, max_word_length)
-    'EasyBot': (0, 31, 5),
-    'OkayBot': (1, 21, 7),
-    'HardBot': (2, 17, 9),
-    'InsaneBot': (3, 7, 10),
+    'EasyBot': (0, 43, 5),
+    'OkayBot': (1, 31, 7),
+    'HardBot': (2, 21, 9),
+    'InsaneBot': (3, 14, 10),
     'DeathBot': (4, 3, 15),
 }

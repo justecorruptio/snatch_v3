@@ -86,6 +86,12 @@ function renderBoard(data) {
     switch(data.phase) {
         case 1:
             $('.snatch-area-inputs-start').show();
+            if(data.has_bot) {
+                $('#snatch-display-add-bot').hide();
+            }
+            else {
+                $('#snatch-display-add-bot').show();
+            }
             break;
         case 2: case 3:
             $('.snatch-area-inputs-play').show();
@@ -146,6 +152,20 @@ function apiCreateGame() {
     }).done(function(data) {
         game.name = data.name;
     });
+}
+
+function apiAddBotGame(level) {
+    return $.ajax(settings.baseUrl + `/${game.name}/addBot`, {
+        type: 'POST',
+        data: JSON.stringify({
+            nonce: game.nonce,
+            level: level,
+        })
+    }).done(function(data) {
+        if('error' in data) {
+            alert(data.error);
+        }
+    })
 }
 
 function apiStartGame() {
@@ -275,6 +295,12 @@ $(function() {
         apiJoinGame();
     })
 
+    $('#snatch-display-add-bot>button').on('click', function() {
+        var $el = $(this),
+            level = $el.text();
+        apiAddBotGame(parseInt(level));
+    });
+
     $('#snatch-button-start').on('click', function() {
         apiStartGame();
     });
@@ -313,6 +339,7 @@ $(function() {
             delete game.nonce;
             delete game.step;
             delete game.phase;
+            lastLogStep = 0;
             $('#snatch-input-name').val('');
             pollXhr.abort();
             showPage(0);
