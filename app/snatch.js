@@ -1,4 +1,5 @@
 var game = window.localStorage;
+var countdownInterval = 0;
 
 var pollXhr;
 
@@ -7,6 +8,27 @@ function alert(message) {
     $el.find('.badge').text(message);
     $el.clearQueue();
     $el.fadeIn(100).delay(1000).fadeOut();
+}
+
+function doCountdown(timeLeft, prev) {
+    var now = Date.now() / 1000;
+    clearInterval(countdownInterval);
+
+    timeLeft -= now - prev;
+    var tl = timeLeft | 0,
+        status_msg;
+
+    if (timeLeft > 0) {
+        countdownInterval = setTimeout(function() {
+            doCountdown(timeLeft , now);
+        }, 100);
+        status_msg = `Game ends in ${tl} seconds.`;
+    }
+    else {
+        countdownInterval = 0;
+        status_msg = 'Game over.';
+    }
+    $('#snatch-display-status').text(status_msg);
 }
 
 function cleanInput() {
@@ -30,7 +52,6 @@ function startGame() {
 
 function renderBoard(data) {
     $('#snatch-display-name').text(game.name);
-    $('#snatch-display-bag').text(data.bag);
     var $table = $('#snatch-display-table');
     var i, j;
 
@@ -63,6 +84,28 @@ function renderBoard(data) {
             $('#snatch-input-word').focus();
             break;
     }
+    var status_msg;
+    switch(data.phase) {
+        case 1:
+            status_msg = 'Waiting for players.';
+            break;
+        case 2:
+            if(data.bag == 1) {
+                status_msg = '1 tile left.';
+            }
+            else {
+                status_msg = `${data.bag} tiles left.`;
+            }
+            break;
+        case 3:
+            doCountdown(data.time_left, Date.now() / 1000);
+            status_msg = '';
+            break;
+        case 4:
+            status_msg = 'Game over.';
+            break;
+    }
+    $('#snatch-display-status').text(status_msg);
 }
 
 function apiCreateGame() {
@@ -121,6 +164,11 @@ function apiJoinGame() {
 
 function apiPollGame() {
     var query = '';
+
+    if(!game.name) {
+        // how does this happen?
+        return;
+    }
     if(game.step != undefined) {
         query = '?step=' + game.step;
     }
@@ -128,13 +176,17 @@ function apiPollGame() {
         type: 'GET',
     });
     pollXhr.done(function(data) {
-        console.log(data);
         game.step = data.step;
         renderBoard(data);
-        apiPollGame();
+        if(game.phase != 4) {
+            apiPollGame();
+        }
     }).fail(function () {
-        alert('Network Error, reconnecting...');
-        setTimeout(apiPollGame, 1000);
+        if(game.name) {
+            // name is cleared before leaving
+            alert('Network Error, reconnecting...');
+            setTimeout(apiPollGame, 1000);
+        }
     });
     return pollXhr;
 }
@@ -237,7 +289,7 @@ $(function() {
         }
      });
 
-     if (game.name != undefined && game.nonce != undefined) {
+     if (game.name && game.nonce) {
         showPage(1);
         delete game.step;
         apiPollGame();

@@ -27,6 +27,10 @@ class State(dict):
             ret.pop('nonces')
         if 'bag' in ret:
             ret['bag'] = len(ret['bag'])
+        if 'start_ts' in ret:
+            ret['time_left'] = (
+                settings.ENDGAME_TIME - (time.time() - ret['start_ts'])
+            )
         return ret
 
 
