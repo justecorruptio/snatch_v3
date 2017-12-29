@@ -52,6 +52,41 @@
             .snatch-tile-p-6 { background-color: #00ff3a; }
             .snatch-tile-p-7 { background-color: #00ccb8; }
 
+            #snatch-keyboard div {
+                width: calc(100vw / 9 - .4rem);
+                color: #555;
+                background-color: #eee;
+                border-style: solid;
+                border-color: #555;
+                border-width: 1px 1px 2px 1px;
+                display: inline-block;
+                font-weight: 100;
+                line-height: 1.8;
+                text-align: center;
+                white-space: nowrap;
+                vertical-align: baseline;
+                border-radius: .25rem;
+                padding: .1rem .25rem .1rem .25rem;
+                margin: .2rem;
+
+                height: 2.5rem;
+                font-size: 120%;
+            }
+            #snatch-keyboard div:active {
+                background-color: #cf5;
+            }
+            @media (max-width: 575.99px) {
+                .snatch-area-inputs-play {
+                    position: fixed;
+                    bottom: 0px;
+                    left: 0px;
+                    right: 0px;
+                }
+                #snatch-input-word {
+                    pointer-events: none;
+                }
+            }
+
             flexbreak {
                 flex-basis: 100%;
                 width: 0px;
@@ -124,25 +159,27 @@
                     Game ID: <span id="snatch-display-name"></span>
                 </span>
             </div>
-            <div id="snatch-display-table" class="d-flex flex-wrap align-items-center mb-2">
-            </div>
+            <div id="snatch-display-table"
+                class="d-flex flex-wrap align-items-center mb-2"
+            ></div>
             <div id="snatch-display-players" class="ml-1">
             </div>
 
             <div class="snatch-area-inputs snatch-area-inputs-start">
                 <div class="d-flex flex-row mt-2">
                     <div class="mx-1">
-                        <button id="snatch-button-start" class="btn btn-primary">
-                            Start Game
-                        </button>
+                        <button id="snatch-button-start"
+                            class="btn btn-primary"
+                        >Start Game</button>
                     </div>
                 </div>
             </div>
 
             <div class="snatch-area-inputs snatch-area-inputs-play">
-                <div class="d-flex flex-row mt-2">
+                <div class="d-flex flex-row my-2">
                     <div class="ml-1">
-                        <input id="snatch-input-word" type="text" class="form-control"
+                        <input id="snatch-input-word" type="text"
+                            class="form-control"
                             placeholder="Enter a word"
                             autocomplete="off" autocorrect="off"
                             autocapitalize="off" spellcheck="false"
@@ -150,10 +187,14 @@
                         ></input>
                     </div>
                     <div class="mx-2">
-                        <button id="snatch-button-play" class="btn btn-primary">
-                            Snatch!
-                        </button>
+                        <button id="snatch-button-play"
+                            class="btn btn-primary"
+                        >Snatch!</button>
                     </div>
+                </div>
+
+                <div id="snatch-keyboard"
+                    class="d-flex flex-wrap align-items-end d-sm-none">
                 </div>
             </div>
         </div>

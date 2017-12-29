@@ -134,6 +134,30 @@ $(function() {
     $('#snatch-input-handle').on('change', cleanInput);
     $('#snatch-input-word').on('change', cleanInput);
 
+    $('#snatch-input-word').on('keypress', function(event) {
+        event.preventDefault();
+        var i = event.which,
+            c = '',
+            $el = $(this),
+            val = $el.val();
+        if (i >= 97 && i <= 122){
+            c = String.fromCharCode(i - 32);
+        }
+        else if (i >= 65 && i<= 90){
+            c = String.fromCharCode(i);
+        }
+
+        if (c != '' && val.length < 15) {
+            $el.val(val + c);
+        }
+        else if (i == 8 && val != '') {
+            $el.val(val.substr(0, val.length - 1));
+        }
+        else if (i == 13) {
+            apiPlayGame();
+        }
+    });
+
     $('#snatch-button-new-game').on('click', function() {
         if(!$('#snatch-input-handle').val()) {
             alert('Please enter a user name.');
@@ -163,12 +187,32 @@ $(function() {
         apiPlayGame();
     });
 
+    for(var i = 0; i < 27; i++) {
+        $('#snatch-keyboard').append(
+            $(`<div>${"QWERTYUIOASDFGHJKLZXCVBNMP<"[i]}</div>`)
+        );
+    }
+     $('#snatch-keyboard div').on('click', function() {
+        var $el = $(this),
+            $word = $('#snatch-input-word'),
+            word = $word.val();
+            c = $el.text();
+        if(c == '<') {
+            if(word.length > 0) {
+                $word.val(word.substr(0, word.length - 1));
+            }
+        }
+        else {
+            $word.val(word + c);
+        }
+     });
+
     /*
     // XXX:testing
     name = 'XKJRN';
     showPage(1);
     renderBoard({
-        phase: 1,
+        phase: 3,
         bag: 56,
         table: "DOIWJOQIENKJWWW",
         players: [
