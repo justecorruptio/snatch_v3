@@ -83,7 +83,12 @@ class Game(object):
 
         return {'nonce': nonce}
 
-    def start(self):
+    def start(self, nonce):
+
+        player_num = self.state.nonces.get(nonce, None)
+        if player_num is None:
+            return {'error': 'invalid player'}
+
         self.state.phase = PHASE_STARTED
         self.state.start_ts = time.time()
         self.state.step += 1
@@ -141,13 +146,13 @@ class Game(object):
 
     def play(self, nonce, target):
         player_num = self.state.nonces.get(nonce, None)
+        if player_num is None:
+            return {'error': 'invalid player'}
 
         if len(target) < settings.MIN_WORD_LENGTH:
             return {'error': 'minimum word length is %s' % (
                 settings.MIN_WORD_LENGTH,
             )}
-        if player_num is None:
-            return {'error': 'invalid player'}
 
         if not anagram.is_word(target):
             return {'error': '%s is not a word' % (target,)}

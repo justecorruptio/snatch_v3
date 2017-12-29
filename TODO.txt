@@ -1,5 +1,4 @@
 backend:
-    /start should require the nonce
 
 frontend:
     handle endgame

@@ -43,7 +43,11 @@ class GamePoll(object):
 
 class GameStart(object):
     def POST(self, name):
-        job = Job(action='start', name=name)
+        data = json.loads(web.data())
+        nonce = data.get('nonce', None)
+        if not nonce:
+            return '{"error":"nonce missing"}'
+        job = Job(action='start', name=name, args=[nonce])
         fabric.defer_job(settings.QUEUE_NAME, job)
         return json.dumps(job.result)
 

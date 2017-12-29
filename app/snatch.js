@@ -68,6 +68,9 @@ function apiCreateGame() {
 function apiStartGame() {
     return $.ajax(settings.baseUrl + `/${name}/start`, {
         type: 'POST',
+        data: JSON.stringify({
+            nonce: nonce,
+        })
     }).done(function(data) {
         if('error' in data) {
             alert(data.error);
@@ -129,6 +132,8 @@ $(function() {
     });
 
     $('#snatch-input-handle').on('change', cleanInput);
+    $('#snatch-input-word').on('change', cleanInput);
+
     $('#snatch-button-new-game').on('click', function() {
         if(!$('#snatch-input-handle').val()) {
             alert('Please enter a user name.');
