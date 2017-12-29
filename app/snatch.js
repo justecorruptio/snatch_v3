@@ -71,8 +71,13 @@ function renderBoard(data) {
     $players.html('');
     for(i = 0; i < data.players.length; i++) {
         var [h, words] = data.players[i],
-            $row = $('<div class="d-flex flex-wrap align-items-baseline">');
-            $row.append($(`<b>${h}</b>`));
+            $row = $('<div class="d-flex flex-wrap align-items-baseline">'),
+            score = 0;
+        for(j = 0; j< words.length; j++) {
+            score += words[j].length;
+        }
+        $row.append($(`<div class="snatch-handle snatch-handle-p-${i}">${score}</div>`));
+        $row.append($(`<div class="snatch-handle snatch-handle-p-${i}">${h}</div>`));
         for(j = 0; j< words.length; j++) {
             $row.append($(`<div class="snatch-tile snatch-tile-p-${i}">${words[j]}</div>`));
         }
@@ -373,6 +378,7 @@ $(function() {
         players: [
             ['Jay', ['HAPPY', 'BIRTH', 'CHRISTMAS', 'MONTHLY', 'MARTYR']],
             ['Marissa', ['JEJUNE', 'AUGUST', 'HOPEFUL', 'FOUR']],
+            ['Ruth', ['BARF']],
         ]
     });
     */
