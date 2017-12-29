@@ -2,6 +2,13 @@ var name;
 var nonce;
 var step=null;
 
+function alert(message) {
+    var $el = $('#snatch-alert');
+    $el.find('.badge').text(message);
+    $el.clearQueue();
+    $el.fadeIn(100).delay(1000).fadeOut();
+}
+
 function cleanInput() {
     var $el = $(this),
         val = $el.val();
@@ -87,11 +94,11 @@ function apiPlayGame() {
             word: $('#snatch-input-word').val()
         })
     }).done(function(data) {
+        $('#snatch-input-word').val('');
         if('error' in data) {
             alert(data.error);
             return Promise.reject();
         }
-        $('#snatch-input-word').val('')
     })
 }
 
@@ -184,6 +191,10 @@ $(function() {
     });
 
     $('#snatch-button-play').on('click', function() {
+        if($('#snatch-input-word').val().length < 4) {
+            alert('Minimum word length is 4');
+            return;
+        }
         apiPlayGame();
     });
 
