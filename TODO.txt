@@ -1,7 +1,8 @@
 backend:
+    support different game settings
+    bots
 
 frontend:
     handle endgame
     handle alerts
     reconnections
-    press enter to submit
