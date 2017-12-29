@@ -53,6 +53,7 @@ function renderBoard(data) {
     }
 
     $('.snatch-area-inputs').hide();
+    game.phase = data.phase;
     switch(data.phase) {
         case 1:
             $('.snatch-area-inputs-start').show();
@@ -221,10 +222,11 @@ $(function() {
      });
 
      $('#snatch-button-leave').on('click', function() {
-        if(confirm('Leave game? (You cannot re-join.)')) {
+        if(game.phase == 4 || confirm('Leave game? (You cannot re-join.)')) {
             delete game.name;
             delete game.nonce;
             delete game.step;
+            delete game.phase;
             $('#snatch-input-name').val('');
             pollXhr.abort();
             showPage(0);

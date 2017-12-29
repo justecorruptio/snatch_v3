@@ -1,9 +1,14 @@
 import json
+import os
+import sys
 import web
+
+sys.path.append(os.path.dirname(__file__))
 
 from fabric import fabric, Job
 from game import Game
 import settings
+
 
 urls = (
     '/game', 'GameCreate',
@@ -80,6 +85,10 @@ class HeadersMiddleware(object):
 
         return self.app(environ, custom_start_response)
 
+app = web.application(urls, globals())
+
+
 if __name__ == '__main__':
-    app = web.application(urls, globals())
     app.run(HeadersMiddleware)
+else:
+    application = app.wsgifunc(HeadersMiddleware)
