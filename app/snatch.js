@@ -119,6 +119,9 @@ function renderBoard(data) {
     console.log(log_data);
     if (log_data[0] > lastLogStep) {
         lastLogStep = log_data[0];
+        if(log_data[1] == 'join') {
+            log(`${log_data[2]} has joined the game.`);
+        }
         if(log_data[1] == 'play') {
             log(`${data.players[log_data[3]][0]} plays ${log_data[2]}.`);
         }

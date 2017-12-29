@@ -2,6 +2,10 @@ backend:
     support different game settings
     bots
     rate limit
+    start a new game after one has ended.
+    tidy up state machine
 
 frontend:
     debounce
+    spinner for high latency on mobile.
+    bug: starting a new game flashes old game.

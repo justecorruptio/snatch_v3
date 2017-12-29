@@ -1,4 +1,5 @@
 from itertools import combinations
+import random
 
 import settings
 
@@ -72,6 +73,42 @@ class Anagram(object):
 
         return None, error
 
+    def bot(self, table, words, max_word_len):
+
+        # protect ourselves from segfault
+        table = table[-10:]
+
+        letter_hashes = [None] * 16
+
+        for i in xrange(4, -1, -1):
+            for w in combinations(words, i):
+                combo = ''.join(w)
+                if len(combo) > max_word_len:
+                    continue
+                words_hx = self.hash(combo)
+
+                for j in xrange(
+                    [4, 1, 0, 0, 0][i],
+                    max_word_len - len(combo) + 1,
+                    1,
+                ):
+                    if letter_hashes[j] is None:
+                        letter_hashes[j] = [
+                            (l, self.hash(l))
+                            for l in combinations(table, j)
+                        ]
+                    entries = letter_hashes[j]
+                    for l, letter_hx in entries:
+                        hx = words_hx * letter_hx
+                        if hx not in self.data:
+                            continue
+
+                        return (
+                            random.choice(self.data[hx]),
+                            list(w) + list (l),
+                        )
+        return None, None
+
     def is_word(self, target):
         target_hx = self.hash(target)
         return target in self.data.get(target_hx, [])
@@ -84,6 +121,11 @@ if __name__ == '__main__':
     import time
     a = time.time()
     #res = anagram.check(list('TYBE'), ['VAIN', 'GAS'], 'VANITY')
-    res = anagram.check(list('EMPSTH'), ['HEED', 'BAD'], 'BEHEADED')
+    res = anagram.check('EMPSTH', ['HEED', 'BAD'], 'BEHEADED')
+    b = time.time()
+    print res, '%0.2f ms' % ((b - a) * 1000,)
+
+    a = time.time()
+    res = anagram.bot('EMPSTH', ['HEED', 'BAD'], 6)
     b = time.time()
     print res, '%0.2f ms' % ((b - a) * 1000,)

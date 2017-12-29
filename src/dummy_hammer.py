@@ -3,14 +3,15 @@ import requests
 import time
 
 
-BASE_URL = 'http://localhost:8080/game'
+BASE_URL = 'http://localhost/snatch_api/game'
 
-while True:
 
-    r = requests.post(BASE_URL)
-    name = r.json()['name']
+r = requests.post(BASE_URL)
+name = r.json()['name']
+handle = 'Jay'
+r = requests.post(BASE_URL + '/' + name + '/join', json={'handle': handle})
+nonce = r.json()['nonce']
 
-    requests.post(BASE_URL + '/' + name + '/start')
+r = requests.post(BASE_URL + '/' + name + '/addBot', json={'nonce': nonce, 'level': 5})
 
-    #time.sleep(random.random() / 100)
-
+requests.post(BASE_URL + '/' + name + '/start', json={'nonce': nonce})

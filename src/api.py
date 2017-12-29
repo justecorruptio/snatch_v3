@@ -16,6 +16,7 @@ urls = (
     '/game/([a-zA-Z]{5})/join', 'GameJoin',
     '/game/([a-zA-Z]{5})/start', 'GameStart',
     '/game/([a-zA-Z]{5})/play', 'GamePlay',
+    '/game/([a-zA-Z]{5})/addBot', 'GameAddBot',
 )
 
 web.config.debug = False
@@ -69,6 +70,21 @@ class GamePlay(object):
         word = word.upper()
 
         job = Job(action='play', name=name, args=[nonce, word])
+        fabric.defer_job(settings.QUEUE_NAME, job)
+        return json.dumps(job.result)
+
+class GameAddBot(object):
+    def POST(self, name):
+        data = json.loads(web.data())
+        nonce = data.get('nonce', None)
+        if not nonce:
+            return '{"error":"nonce missing"}'
+
+        level = data.get('level', None)
+        if not level:
+            return '{"error":"level missing"}'
+
+        job = Job(action='add_bot', name=name, args=[nonce, level])
         fabric.defer_job(settings.QUEUE_NAME, job)
         return json.dumps(job.result)
 

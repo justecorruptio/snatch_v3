@@ -1,5 +1,6 @@
 import json
 import random
+import sys
 import time
 
 from anagram import anagram
@@ -74,11 +75,12 @@ class Game(object):
             success = game.store(initial=True)
         return game
 
-    def join(self, handle):
+    def join(self, handle, nonce=None):
         if any(p[0] == handle for p in self.state.players):
             return {'error': 'duplicate name'}
         next_player_num = len(self.state.players)
-        nonce = '%s_%03d' % (rand_chars(7), next_player_num)
+        if nonce is None:
+            nonce = '%s_%03d' % (rand_chars(7), next_player_num)
         self.state.players.append((handle, []))
         self.state.nonces[nonce] = next_player_num
         self.state.step += 1
@@ -104,6 +106,12 @@ class Game(object):
             Job(action='peel', name=self.name),
             delay=settings.PEEL_DELAY,
         )
+
+        if 'BOT' in self.state.nonces:
+            fabric.defer_job(
+                settings.QUEUE_NAME,
+                Job(action='loop_bot', name=self.name),
+            )
 
         return {}
 
@@ -148,7 +156,7 @@ class Game(object):
 
         return None
 
-    def play(self, nonce, target):
+    def play(self, nonce, target, how=None):
         player_num = self.state.nonces.get(nonce, None)
         if player_num is None:
             return {'error': 'Invalid player'}
@@ -161,11 +169,12 @@ class Game(object):
         if not anagram.is_word(target):
             return {'error': '%s is not a word' % (target,)}
 
-        how, error = anagram.check(
-            self.state.table,
-            sum([words for _, words in self.state.players], []),
-            target,
-        )
+        if how is None:
+            how, error = anagram.check(
+                self.state.table,
+                sum([words for _, words in self.state.players], []),
+                target,
+            )
 
         if how is None:
             return {'error': error}
@@ -196,6 +205,57 @@ class Game(object):
 
         return {}
 
+    def add_bot(self, nonce, level):
+        player_num = self.state.nonces.get(nonce, None)
+        if player_num is None:
+            return {'error': 'Invalid player'}
+
+        try:
+            level = int(level)
+            if level > 5 or level < 1:
+                raise Exception()
+            level -= 1
+        except Exception:
+            return {'error', 'Invalid level'}
+
+        if 'BOT' in self.state.nonces:
+            return {'error', 'Only one bot per game.'}
+
+        handle = [
+            h for h, (l, _, _) in settings.BOTS.items()
+            if l == level
+        ][0]
+
+        self.join(handle, nonce='BOT')
+
+        return {}
+
+    def loop_bot(self):
+        if self.state.phase == 4:
+            return {}
+
+        player_num = self.state.nonces['BOT']
+        handle = self.state.players[player_num][0]
+        level, loop_ttl, max_word_len = settings.BOTS[handle]
+
+        if self.state.phase in (2, 3):
+            target, how = anagram.bot(
+                self.state.table,
+                sum([words for _, words in self.state.players], []),
+                max_word_len,
+            )
+
+            if target:
+                self.play('BOT', target, how)
+
+        fabric.defer_job(
+            settings.QUEUE_NAME,
+            Job(action='loop_bot', name=self.name),
+            delay=loop_ttl,
+        )
+
+        return {}
+
     @classmethod
     def execute(cls, job):
         action = job.data['action']
@@ -220,6 +280,8 @@ class Game(object):
 
                 result = getattr(game, action)(*args)
             except Exception, e:
+                import traceback
+                sys.stderr.write(traceback.format_exc() + '\n')
                 result = {'error': str(e)}
 
             if result is not None:
@@ -237,6 +299,8 @@ class Game(object):
         finally:
             if has_lock:
                 fabric.release(game.lock_key)
+
+        return result
 
     def log(self, *message):
         self.state.log = self.state.log[-4:] + [

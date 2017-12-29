@@ -24,7 +24,7 @@ class Daemon(object):
             try:
                 start_ts = time.time()
                 planned_ts = job.planned_ts
-                Game.execute(job)
+                result = Game.execute(job)
                 end_ts = time.time()
             except Exception, e:
                 if settings.DEBUG:
@@ -34,11 +34,12 @@ class Daemon(object):
             else:
                 if settings.DEBUG:
                     sys.stderr.write(
-                        '%0.2f + %0.4f (%0.4f off) | %s\n' % (
+                        '%0.2f + %0.4f (%0.4f off) | %s -> %s\n' % (
                             start_ts,
                             end_ts - start_ts,
                             start_ts - planned_ts,
                             job.data,
+                            result,
                         ),
                     )
 

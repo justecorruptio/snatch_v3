@@ -32,3 +32,12 @@ ENDGAME_TIME = 60
 #ENDGAME_TIME = 10
 
 DEBUG = True
+
+BOTS = {
+    # name: (level, loop_ttl, max_word_length)
+    'EasyBot': (0, 31, 5),
+    'OkayBot': (1, 21, 7),
+    'HardBot': (2, 17, 9),
+    'InsaneBot': (3, 7, 10),
+    'DeathBot': (4, 3, 15),
+}
