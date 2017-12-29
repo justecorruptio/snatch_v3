@@ -53,7 +53,7 @@ class Game(object):
             phase=PHASE_LOBBY,
             step=0,
             start_ts=time.time(),
-            bag=settings.SCRABBLE_LETTERS,
+            bag=settings.LETTERS,
             table='',
             log=[],
             players=[],
@@ -147,24 +147,24 @@ class Game(object):
     def play(self, nonce, target):
         player_num = self.state.nonces.get(nonce, None)
         if player_num is None:
-            return {'error': 'invalid player'}
+            return {'error': 'Invalid player'}
 
         if len(target) < settings.MIN_WORD_LENGTH:
-            return {'error': 'minimum word length is %s' % (
+            return {'error': 'Minimum word length is %s' % (
                 settings.MIN_WORD_LENGTH,
             )}
 
         if not anagram.is_word(target):
             return {'error': '%s is not a word' % (target,)}
 
-        how = anagram.check(
+        how, error = anagram.check(
             self.state.table,
             sum([words for _, words in self.state.players], []),
             target,
         )
 
         if how is None:
-            return {}
+            return {'error': error}
 
         status = None
         for w in how:

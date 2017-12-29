@@ -1,6 +1,6 @@
-var name;
-var nonce;
-var step=null;
+var game = window.localStorage;
+
+var pollXhr;
 
 function alert(message) {
     var $el = $('#snatch-alert');
@@ -29,7 +29,7 @@ function startGame() {
 }
 
 function renderBoard(data) {
-    $('#snatch-display-name').text(name);
+    $('#snatch-display-name').text(game.name);
     $('#snatch-display-bag').text(data.bag);
     var $table = $('#snatch-display-table');
     var i, j;
@@ -68,15 +68,15 @@ function apiCreateGame() {
     return $.ajax(settings.baseUrl, {
         type: 'POST',
     }).done(function(data) {
-        name = data.name;
+        game.name = data.name;
     });
 }
 
 function apiStartGame() {
-    return $.ajax(settings.baseUrl + `/${name}/start`, {
+    return $.ajax(settings.baseUrl + `/${game.name}/start`, {
         type: 'POST',
         data: JSON.stringify({
-            nonce: nonce,
+            nonce: game.nonce,
         })
     }).done(function(data) {
         if('error' in data) {
@@ -87,10 +87,10 @@ function apiStartGame() {
 }
 
 function apiPlayGame() {
-    return $.ajax(settings.baseUrl + `/${name}/play`, {
+    return $.ajax(settings.baseUrl + `/${game.name}/play`, {
         type: 'POST',
         data: JSON.stringify({
-            nonce: nonce,
+            nonce: game.nonce,
             word: $('#snatch-input-word').val()
         })
     }).done(function(data) {
@@ -103,7 +103,7 @@ function apiPlayGame() {
 }
 
 function apiJoinGame() {
-    return $.ajax(settings.baseUrl + `/${name}/join`, {
+    return $.ajax(settings.baseUrl + `/${game.name}/join`, {
         type: 'POST',
         data: JSON.stringify({
             handle: $('#snatch-input-handle').val()
@@ -113,23 +113,25 @@ function apiJoinGame() {
             alert(data.error);
             return Promise.reject();
         }
-        nonce = data.nonce;
+        game.nonce = data.nonce;
         startGame();
     })
 }
 
 function apiPollGame() {
     var query = '';
-    if(step != null) {
-        query = '?step=' + step;
+    if(game.step != undefined) {
+        query = '?step=' + game.step;
     }
-    return $.ajax(settings.baseUrl + `/${name}${query}`, {
+    pollXhr = $.ajax(settings.baseUrl + `/${game.name}${query}`, {
         type: 'GET',
-    }).done(function(data) {
+    });
+    pollXhr.done(function(data) {
         console.log(data);
-        step = data.step;
+        game.step = data.step;
         renderBoard(data);
     }).then(apiPollGame);
+    return pollXhr;
 }
 
 $(function() {
@@ -182,7 +184,7 @@ $(function() {
             alert('Please enter a 5-Letter game ID');
             return;
         }
-        name = $('#snatch-input-name').val().toUpperCase();
+        game.name = $('#snatch-input-name').val().toUpperCase();
         apiJoinGame();
     })
 
@@ -217,6 +219,23 @@ $(function() {
             $word.val(word + c);
         }
      });
+
+     $('#snatch-button-leave').on('click', function() {
+        if(confirm('Leave game? (You cannot re-join.)')) {
+            delete game.name;
+            delete game.nonce;
+            delete game.step;
+            $('#snatch-input-name').val('');
+            pollXhr.abort();
+            showPage(0);
+        }
+     });
+
+     if (game.name != undefined && game.nonce != undefined) {
+        showPage(1);
+        delete game.step;
+        apiPollGame();
+     }
 
     /*
     // XXX:testing

@@ -55,6 +55,7 @@ class Anagram(object):
             if target_hx % hx == 0:
                 word_hashes.append((w, hx))
 
+        error = '%s is not on the board.' % (target,)
         for i in xrange(5):
             for comb in combinations(word_hashes, i):
                 p = product([hx for w, hx in comb])
@@ -62,13 +63,14 @@ class Anagram(object):
 
                 # disallow just plain stealing
                 if len(comb) == 1 and d == 1:
+                    error = 'You must add letters.'
                     continue
 
                 if m == 0 and table_hx % d == 0:
                     words = [w for w, hx in comb]
-                    return words + self.subtract(target, *words)
+                    return words + self.subtract(target, *words), None
 
-        return None
+        return None, error
 
     def is_word(self, target):
         target_hx = self.hash(target)

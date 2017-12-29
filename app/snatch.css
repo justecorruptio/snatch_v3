@@ -1,13 +1,13 @@
 body {
     height: 100vh;
-    -webkit-user-select: none;
+    user-select: none;
 }
 input:invalid {
     color: red;
 }
 
-.snatch-display-title {
-    background-color: #eee;
+#snatch-display-name{
+    user-select: text;
 }
 
 .snatch-tile {
