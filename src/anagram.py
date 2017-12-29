@@ -78,14 +78,14 @@ class Anagram(object):
 
         return None, error
 
-    def bot(self, table, words, max_word_len):
+    def bot(self, table, words, max_word_len, comb_order):
 
         # protect ourselves from segfault
         table = table[-10:]
 
         letter_hashes = [None] * 16
 
-        for i in xrange(4, -1, -1):
+        for i in comb_order:
             for w in combinations(words, i):
                 combo = ''.join(w)
                 if len(combo) > max_word_len:
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     print res, '%0.2f ms' % ((b - a) * 1000,)
 
     a = time.time()
-    res = anagram.bot('EMPSTH', ['HEED', 'BAD'], 6)
-    res = anagram.bot('SAD', ['HEED'], 8)
+    res = anagram.bot('EMPSTH', ['HEED', 'BAD'], 6, [1, 0])
+    #res = anagram.bot('SAD', ['HEED'], 8, [1, 0])
     b = time.time()
     print res, '%0.2f ms' % ((b - a) * 1000,)

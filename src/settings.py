@@ -34,10 +34,10 @@ ENDGAME_TIME = 60
 DEBUG = True
 
 BOTS = {
-    # name: (level, loop_ttl, max_word_length)
-    'EasyBot': (0, 47, 5),
-    'OkayBot': (1, 37, 6),
-    'HardBot': (2, 27, 8),
-    'InsaneBot': (3, 16, 10),
-    'DeathBot': (4, 4, 15),
+    # name: (level, loop_ttl, max_word_len, comb_order)
+    'EasyBot': (0, 47, 5, [0]),
+    'OkayBot': (1, 37, 6, [0, 1]),
+    'HardBot': (2, 27, 8, [1, 0]),
+    'InsaneBot': (3, 16, 10, [1, 0, 2]),
+    'DeathBot': (4, 4, 15, [1, 0, 2, 3]),
 }
