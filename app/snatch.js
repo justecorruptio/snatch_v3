@@ -131,7 +131,11 @@ function apiPollGame() {
         console.log(data);
         game.step = data.step;
         renderBoard(data);
-    }).then(apiPollGame);
+        apiPollGame();
+    }).fail(function () {
+        alert('Network Error, reconnecting...');
+        setTimeout(apiPollGame, 1000);
+    });
     return pollXhr;
 }
 
