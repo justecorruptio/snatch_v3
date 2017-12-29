@@ -1,5 +1,6 @@
 var game = window.localStorage;
 var countdownInterval = 0;
+var lastLogStep = -1;
 
 var pollXhr;
 
@@ -7,7 +8,14 @@ function alert(message) {
     var $el = $('#snatch-alert');
     $el.find('.badge').text(message);
     $el.clearQueue();
-    $el.fadeIn(100).delay(1000).fadeOut();
+    $el.fadeIn(100).delay(1500).fadeOut();
+}
+
+function log(message) {
+    var $el = $('#snatch-log');
+    $el.find('.badge').text(message);
+    $el.clearQueue();
+    $el.fadeIn(100).delay(2000).fadeOut();
 }
 
 function doCountdown(timeLeft, prev) {
@@ -106,6 +114,27 @@ function renderBoard(data) {
             break;
     }
     $('#snatch-display-status').text(status_msg);
+
+    var log_data = data.log[data.log.length - 1];
+    console.log(log_data);
+    if (log_data[0] > lastLogStep) {
+        lastLogStep = log_data[0];
+        if(log_data[1] == 'play') {
+            log(`${data.players[log_data[3]][0]} plays ${log_data[2]}.`);
+        }
+        else if(log_data[1] == 'steal') {
+            if(log_data[3] == log_data[5]) {
+                log(`${data.players[log_data[3]][0]} makes ` +
+                    `${log_data[2]} from ${log_data[4]}.`
+                );
+            }
+            else {
+                log(`${data.players[log_data[3]][0]} makes ` +
+                    `${log_data[2]} stealing ${log_data[4]}.`
+                );
+            }
+        }
+    }
 }
 
 function apiCreateGame() {
@@ -178,9 +207,7 @@ function apiPollGame() {
     pollXhr.done(function(data) {
         game.step = data.step;
         renderBoard(data);
-        if(game.phase != 4) {
-            apiPollGame();
-        }
+        apiPollGame();
     }).fail(function () {
         if(game.name) {
             // name is cleared before leaving

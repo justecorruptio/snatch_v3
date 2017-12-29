@@ -4,5 +4,4 @@ backend:
     rate limit
 
 frontend:
-    handle endgame
     debounce
