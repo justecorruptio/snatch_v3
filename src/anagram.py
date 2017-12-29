@@ -63,9 +63,14 @@ class Anagram(object):
                 d, m = divmod(target_hx, p)
 
                 # disallow just plain stealing
-                if len(comb) == 1 and d == 1:
-                    error = 'You must add letters.'
-                    continue
+                if i == 1:
+                    if d == 1:
+                        error = 'You must add letters.'
+                        continue
+
+                    if comb[0][0] + 'S' == target:
+                        error = 'Plural, adding S is not allowed.'
+                        continue
 
                 if m == 0 and table_hx % d == 0:
                     words = [w for w, hx in comb]
@@ -80,7 +85,7 @@ class Anagram(object):
 
         letter_hashes = [None] * 16
 
-        for i in xrange(4, -1, -1):
+        for i in xrange(5):
             for w in combinations(words, i):
                 combo = ''.join(w)
                 if len(combo) > max_word_len:
@@ -103,10 +108,12 @@ class Anagram(object):
                         if hx not in self.data:
                             continue
 
-                        return (
-                            random.choice(self.data[hx]),
-                            list(w) + list (l),
-                        )
+                        target = random.choice(self.data[hx])
+
+                        if i == 1 and target == w[0] + 'S':
+                            continue
+
+                        return target, list(w) + list(l)
         return None, None
 
     def is_word(self, target):
@@ -127,5 +134,6 @@ if __name__ == '__main__':
 
     a = time.time()
     res = anagram.bot('EMPSTH', ['HEED', 'BAD'], 6)
+    res = anagram.bot('SAD', ['HEED'], 8)
     b = time.time()
     print res, '%0.2f ms' % ((b - a) * 1000,)

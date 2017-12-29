@@ -1,6 +1,5 @@
 backend:
     support different game settings
-    bots
     rate limit
     start a new game after one has ended.
     tidy up state machine
