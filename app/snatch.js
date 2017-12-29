@@ -120,7 +120,6 @@ function renderBoard(data) {
     $('#snatch-display-status').text(status_msg);
 
     var log_data = data.log[data.log.length - 1];
-    console.log(log_data);
     if (log_data[0] > lastLogStep) {
         lastLogStep = log_data[0];
         if(log_data[1] == 'join') {
@@ -193,7 +192,8 @@ function apiPlayGame() {
             alert(data.error);
             return Promise.reject();
         }
-        apiPollGame(undefined, True);
+        pollXhr.abort();
+        apiPollGame(undefined);
     })
 }
 
@@ -232,9 +232,8 @@ function apiPollGame(step, halt) {
         if(!halt) {
             apiPollGame(game.step);
         }
-    }).fail(function () {
-        if(game.name) {
-            // name is cleared before leaving
+    }).fail(function (xhr, text_status) {
+        if(text_status != 'abort') {
             alert('Network Error, reconnecting...');
             setTimeout(function() {
                 apiPollGame(step);

@@ -85,7 +85,7 @@ class Anagram(object):
 
         letter_hashes = [None] * 16
 
-        for i in xrange(5):
+        for i in xrange(4, -1, -1):
             for w in combinations(words, i):
                 combo = ''.join(w)
                 if len(combo) > max_word_len:
