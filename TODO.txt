@@ -1,6 +1,6 @@
 backend:
     support different game settings
-    rate limit
+    rate limit - mod_evasive?
     start a new game after one has ended.
     tidy up state machine
     make a fabric.defer_job helper
@@ -9,3 +9,4 @@ frontend:
     debounce
     spinner for high latency on mobile.
     bug: logging n quick succession looks weird
+    how to play page
