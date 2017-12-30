@@ -6,7 +6,6 @@ import web
 sys.path.append(os.path.dirname(__file__))
 
 from fabric import fabric, Job
-from game import Game
 import settings
 
 
@@ -33,6 +32,8 @@ class GameJoin(object):
         handle = data.get('handle', None)
         if not handle:
             return '{"error":"handle missing"}'
+        if len(handle) > 25:
+            return '{"error":"handle too long"}'
         job = Job(action='join', name=name, args=[handle])
         fabric.defer_job(settings.QUEUE_NAME, job)
         return json.dumps(job.result)
@@ -42,9 +43,9 @@ class GamePoll(object):
         data = web.input()
         step = data.get('step', None)
         if step is None:
-            game = Game(name)
-            game.load()
-            return json.dumps(game.state.cleaned())
+            job = Job(action='fetch', name=name)
+            fabric.defer_job(settings.QUEUE_NAME, job)
+            return json.dumps(job.result)
         return fabric.wait('channel:%s' % (name,), timeout=60 * 10)
 
 class GameStart(object):

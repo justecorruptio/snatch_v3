@@ -15,6 +15,10 @@ PHASE_ENDGAME = 3
 PHASE_ENDED = 4
 
 
+class GameError(Exception):
+    pass
+
+
 class State(dict):
     def __getattr__(self, key):
         return self[key]
@@ -76,6 +80,9 @@ class Game(object):
             game.name = rand_chars(5)
             success = game.store(initial=True)
         return game
+
+    def fetch(self):
+        return self.state.cleaned()
 
     def join(self, handle, nonce=None):
         if any(p[0] == handle for p in self.state.players):
@@ -266,24 +273,32 @@ class Game(object):
         action = job.data['action']
         if action == 'create':
             game = cls.create()
-            job.write_result({'name': game.name})
-            return
+            result = {'name': game.name}
+            job.write_result(result)
+            return result
         name = job.data['name']
         args = job.data.get('args', [])
         game = cls(name)
 
+        # everything but the fetch action modifies the state
+        modifies_state = action != 'fetch'
+
         try:
             has_lock = False
-            has_lock = fabric.acquire(game.lock_key)
-            if not has_lock:
-                job.retry()
-                return
+            if modifies_state:
+                has_lock = fabric.acquire(game.lock_key)
+                if not has_lock:
+                    job.retry()
+                    return
 
+            start_step = end_step = None
             try:
                 game.load()
                 start_step = game.state.step
-
                 result = getattr(game, action)(*args)
+                end_step = game.state.step
+            except GameError, e:
+                result = {'error': str(e)}
             except Exception, e:
                 import traceback
                 sys.stderr.write(traceback.format_exc() + '\n')
@@ -292,10 +307,10 @@ class Game(object):
             if result is not None:
                 job.write_result(result)
 
-            end_step = game.state.step
-            game.store()
-
-            if start_step != end_step:
+            if modifies_state:
+                if start_step == end_step:
+                    sys.stderr.write('ASSERTION ERROR: Steps equal!\n')
+                game.store()
                 fabric.notify(
                     game.channel_key,
                     json.dumps(game.state.cleaned()),
@@ -333,5 +348,5 @@ class Game(object):
     def load(self):
         serialized = fabric.load(self.game_key)
         if serialized is None:
-            raise Exception('game not found')
+            raise GameError('game not found')
         self.state = State(**json.loads(serialized))

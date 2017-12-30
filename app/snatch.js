@@ -56,6 +56,20 @@ function startGame() {
     apiPollGame();
 }
 
+function reset() {
+    delete game.name;
+    delete game.nonce;
+    delete game.step;
+    delete game.phase;
+    lastLogStep = 0;
+    clearTimeout(countdownInterval);
+    $('#snatch-input-name').val('');
+    $('#snatch-display-table').html('');
+    $('#snatch-display-players').html('');
+    pollXhr.abort();
+    showPage(0);
+}
+
 function renderBoard(data) {
     $('#snatch-display-name').text(game.name);
     var $table = $('#snatch-display-table');
@@ -127,9 +141,9 @@ function renderBoard(data) {
     var log_data = data.log[data.log.length - 1];
     if (log_data[0] > lastLogStep) {
         lastLogStep = log_data[0];
-        if(log_data[1] == 'join') {
-            log(`${log_data[2]} has joined the game.`);
-        }
+        //if(log_data[1] == 'join') {
+        //    log(`${log_data[2]} has joined the game.`);
+        //}
         if(log_data[1] == 'play') {
             log(`${data.players[log_data[3]][0]} plays ${log_data[2]}.`);
         }
@@ -232,6 +246,11 @@ function apiPollGame(step, halt) {
         type: 'GET',
     });
     pollXhr.done(function(data) {
+        if('error' in data) {
+            alert(data.error);
+            reset();
+            return;
+        }
         game.step = data.step;
         renderBoard(data);
         if(!halt) {
@@ -278,6 +297,30 @@ $(function() {
         }
         else if (i == 13) {
             apiPlayGame();
+        }
+    });
+
+    $('#snatch-input-name').on('keypress', function(event) {
+        event.preventDefault();
+        var i = event.which,
+            c = '',
+            $el = $(this),
+            val = $el.val();
+        if (i >= 97 && i <= 122){
+            c = String.fromCharCode(i - 32);
+        }
+        else if (i >= 65 && i<= 90){
+            c = String.fromCharCode(i);
+        }
+
+        if (c != '' && val.length < 5) {
+            $el.val(val + c);
+        }
+        else if (i == 8 && val != '') {
+            $el.val(val.substr(0, val.length - 1));
+        }
+        else if (i == 13) {
+            apiJoinGame();
         }
     });
 
@@ -344,17 +387,7 @@ $(function() {
 
      $('#snatch-button-leave').on('click', function() {
         if(game.phase == 4 || confirm('Leave game? (You cannot re-join.)')) {
-            delete game.name;
-            delete game.nonce;
-            delete game.step;
-            delete game.phase;
-            lastLogStep = 0;
-            clearTimeout(countdownInterval);
-            $('#snatch-input-name').val('');
-            $('#snatch-display-table').html('');
-            $('#snatch-display-players').html('');
-            pollXhr.abort();
-            showPage(0);
+            reset();
         }
      });
 
