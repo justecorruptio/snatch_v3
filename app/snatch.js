@@ -6,14 +6,14 @@ var pollXhr;
 function alert(message) {
     var $el = $('#snatch-alert');
     $el.find('.badge').text(message);
-    $el.clearQueue();
+    $el.stop(true);
     $el.fadeIn(100).delay(1500).fadeOut();
 }
 
 function log(message) {
     var $el = $('#snatch-log');
     $el.find('.badge').text(message);
-    $el.clearQueue();
+    $el.stop(true);
     $el.fadeIn(100).delay(3000).fadeOut();
 }
 
@@ -53,6 +53,7 @@ function showPage(page) {
 
 function startGame() {
     showPage(1);
+    lastLogStep = -1;
     apiPollGame();
 }
 
@@ -114,6 +115,16 @@ function renderBoard(data) {
             $('.snatch-area-inputs-play').show();
             $('#snatch-input-word').focus();
             break;
+        case 4:
+            $('.snatch-area-next-game').show();
+            $('.snatch-area-next-game button').hide();
+            if(data.next_name) {
+                game.next_name = data.next_name;
+                $('#snatch-button-join-next-game').show();
+            }else{
+                delete game.next_name;
+                $('#snatch-button-create-next-game').show();
+            }
     }
     var status_msg;
     switch(data.phase) {
@@ -139,6 +150,7 @@ function renderBoard(data) {
     $('#snatch-display-status').text(status_msg);
 
     var log_data = data.log[data.log.length - 1];
+    console.log(log_data);
     if (log_data[0] > lastLogStep) {
         lastLogStep = log_data[0];
         //if(log_data[1] == 'join') {
@@ -163,8 +175,16 @@ function renderBoard(data) {
 }
 
 function apiCreateGame() {
+    var post_data;
+    if(game.name) {
+        post_data = JSON.stringify({link: game.name});
+    }
+    else {
+        post_data = '{}';
+    }
     return $.ajax(settings.baseUrl, {
         type: 'POST',
+        data: post_data,
     }).done(function(data) {
         game.name = data.name;
     });
@@ -217,7 +237,11 @@ function apiPlayGame() {
 }
 
 function apiJoinGame() {
-    return $.ajax(settings.baseUrl + `/${game.name}/join`, {
+    var game_name = game.name;
+    if(game.phase == 4 && game.next_name) {
+        game_name = game.next_name;
+    }
+    return $.ajax(settings.baseUrl + `/${game_name}/join`, {
         type: 'POST',
         data: JSON.stringify({
             handle: game.handle
@@ -227,6 +251,7 @@ function apiJoinGame() {
             alert(data.error);
             return Promise.reject();
         }
+        game.name = game_name;
         game.nonce = data.nonce;
         startGame();
     })
@@ -384,6 +409,16 @@ $(function() {
             $word.val(word + c);
         }
      });
+
+    $('#snatch-button-create-next-game').on('click', function() {
+        pollXhr.abort();
+        apiCreateGame().then(apiJoinGame);
+    });
+
+    $('#snatch-button-join-next-game').on('click', function() {
+        pollXhr.abort();
+        apiJoinGame();
+    });
 
      $('#snatch-button-leave').on('click', function() {
         if(game.phase == 4 || confirm('Leave game? (You cannot re-join.)')) {

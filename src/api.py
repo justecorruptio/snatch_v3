@@ -22,13 +22,19 @@ web.config.debug = False
 
 class GameCreate(object):
     def POST(self):
-        job = Job(action='create')
+        data = json.loads(web.data() or '{}')
+        link = data.get('link', None)
+        if link is not None:
+            link = str(link)
+            if len(link) > 5:
+                return '{"error":"invalid link"}'
+        job = Job(action='create', args=[link])
         fabric.defer_job(settings.QUEUE_NAME, job)
         return json.dumps(job.result)
 
 class GameJoin(object):
     def POST(self, name):
-        data = json.loads(web.data())
+        data = json.loads(web.data() or '{}')
         handle = data.get('handle', None)
         if not handle:
             return '{"error":"handle missing"}'
@@ -40,7 +46,7 @@ class GameJoin(object):
 
 class GamePoll(object):
     def GET(self, name):
-        data = web.input()
+        data = web.input() or {}
         step = data.get('step', None)
         if step is None:
             job = Job(action='fetch', name=name)
@@ -50,7 +56,7 @@ class GamePoll(object):
 
 class GameStart(object):
     def POST(self, name):
-        data = json.loads(web.data())
+        data = json.loads(web.data() or '{}')
         nonce = data.get('nonce', None)
         if not nonce:
             return '{"error":"nonce missing"}'
@@ -60,7 +66,7 @@ class GameStart(object):
 
 class GamePlay(object):
     def POST(self, name):
-        data = json.loads(web.data())
+        data = json.loads(web.data() or '{}')
         nonce = data.get('nonce', None)
         if not nonce:
             return '{"error":"nonce missing"}'
@@ -76,7 +82,7 @@ class GamePlay(object):
 
 class GameAddBot(object):
     def POST(self, name):
-        data = json.loads(web.data())
+        data = json.loads(web.data() or '{}')
         nonce = data.get('nonce', None)
         if not nonce:
             return '{"error":"nonce missing"}'

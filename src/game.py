@@ -50,6 +50,7 @@ class State(dict):
     log: list of log messages, recent last
     players: list of (name, words) tuples
     nonces: dict mapping nonce key to player number
+    link: name of the next game.
 '''
 
 
@@ -69,20 +70,31 @@ class Game(object):
             log=[],
             players=[],
             nonces={},
+            next_name=None,
         )
 
     @classmethod
-    def create(cls):
+    def create(cls, prev_name=None):
         game = cls()
         game.reset()
         success = False
         while not success:
             game.name = rand_chars(5)
             success = game.store(initial=True)
+
+        fabric.defer_job(
+            settings.QUEUE_NAME,
+            Job(action='link', name=prev_name, args=[game.name]),
+        )
         return game
 
     def fetch(self):
         return self.state.cleaned()
+
+    def link(self, next_name):
+        self.state.next_name = next_name
+        self.state.step += 1
+        self.log('link', next_name)
 
     def join(self, handle, nonce=None):
         if any(p[0] == handle for p in self.state.players):
@@ -153,8 +165,9 @@ class Game(object):
             fabric.defer_job(
                 settings.QUEUE_NAME,
                 Job(action='end', name=self.name),
-                # fix a tiny race condition
-                delay=settings.ENDGAME_TIME - delayed_time + .01,
+                # fix a tiny race condition, repeatedly try to end
+                # the game until it is.
+                delay=1,
             )
             return
 
@@ -271,13 +284,15 @@ class Game(object):
     @classmethod
     def execute(cls, job):
         action = job.data['action']
+        args = job.data.get('args', [])
+
         if action == 'create':
-            game = cls.create()
+            game = cls.create(*args)
             result = {'name': game.name}
             job.write_result(result)
             return result
+
         name = job.data['name']
-        args = job.data.get('args', [])
         game = cls(name)
 
         # everything but the fetch action modifies the state
