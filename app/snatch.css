@@ -1,6 +1,7 @@
 body {
     height: calc(100vh - 100px);
     user-select: none;
+    -webkit-user-select: none;
 }
 input:invalid {
     color: red;
