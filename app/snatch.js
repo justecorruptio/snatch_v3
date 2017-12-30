@@ -150,7 +150,6 @@ function renderBoard(data) {
     $('#snatch-display-status').text(status_msg);
 
     var log_data = data.log[data.log.length - 1];
-    console.log(log_data);
     if (log_data[0] > lastLogStep) {
         lastLogStep = log_data[0];
         //if(log_data[1] == 'join') {

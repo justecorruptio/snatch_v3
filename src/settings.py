@@ -3,6 +3,7 @@ import os
 BASE_DIR = os.path.join(os.path.dirname(__file__), '..')
 
 WORD_LIST = os.path.join(BASE_DIR, 'data/twl.txt')
+EASY_LIST = os.path.join(BASE_DIR, 'data/easy.txt')
 
 SCRABBLE_LETTERS = (
     'AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLL'

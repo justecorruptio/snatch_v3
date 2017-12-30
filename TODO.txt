@@ -1,7 +1,6 @@
 backend:
     support different game settings
     rate limit - mod_evasive?
-    start a new game after one has ended.
     tidy up state machine
     make a fabric.defer_job helper
     stats API
