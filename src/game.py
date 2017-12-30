@@ -308,13 +308,12 @@ class Game(object):
                 job.write_result(result)
 
             if modifies_state:
-                if start_step == end_step:
-                    sys.stderr.write('ASSERTION ERROR: Steps equal!\n')
                 game.store()
-                fabric.notify(
-                    game.channel_key,
-                    json.dumps(game.state.cleaned()),
-                )
+                if start_step != end_step:
+                    fabric.notify(
+                        game.channel_key,
+                        json.dumps(game.state.cleaned()),
+                    )
 
         finally:
             if has_lock:
