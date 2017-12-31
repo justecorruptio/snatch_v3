@@ -230,8 +230,6 @@ function apiPlayGame() {
             alert(data.error);
             return Promise.reject();
         }
-        pollXhr.abort();
-        apiPollGame(undefined);
     })
 }
 
