@@ -218,11 +218,16 @@ function apiStartGame() {
 }
 
 function apiPlayGame() {
+    var word = $('#snatch-input-word').val();
+    if(word.length < 4) {
+        alert('Minimum word length is 4');
+        return;
+    }
     return $.ajax(settings.baseUrl + `/${game.name}/play`, {
         type: 'POST',
         data: JSON.stringify({
             nonce: game.nonce,
-            word: $('#snatch-input-word').val()
+            word: word
         })
     }).done(function(data) {
         $('#snatch-input-word').val('');
@@ -380,10 +385,6 @@ $(function() {
     });
 
     $('#snatch-button-play').on('click', function() {
-        if($('#snatch-input-word').val().length < 4) {
-            alert('Minimum word length is 4');
-            return;
-        }
         apiPlayGame();
     });
 
