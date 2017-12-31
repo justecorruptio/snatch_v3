@@ -82,10 +82,11 @@ class Game(object):
             game.name = rand_chars(5)
             success = game.store(initial=True)
 
-        fabric.defer_job(
-            settings.QUEUE_NAME,
-            Job(action='link', name=prev_name, args=[game.name]),
-        )
+        if prev_name:
+            fabric.defer_job(
+                settings.QUEUE_NAME,
+                Job(action='link', name=prev_name, args=[game.name]),
+            )
         return game
 
     def fetch(self):
