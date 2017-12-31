@@ -12,3 +12,4 @@ frontend:
     spinner for high latency on mobile.
     bug: logging n quick succession looks weird
     how to play page
+    bug: make it so you can paste to game name input

@@ -93,6 +93,7 @@ class Anagram(object):
                 words_hx = self.hash(combo)
 
                 for j in xrange(
+                    # TODO: bot's min 4 logic is here
                     [4, 1, 0, 0, 0][i],
                     max_word_len - len(combo) + 1,
                     1,
