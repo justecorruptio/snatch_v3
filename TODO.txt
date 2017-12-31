@@ -1,5 +1,8 @@
-backend:
+general:
+    bloom filter to test wordiness before hitting backend
     support different game settings
+
+backend:
     rate limit - mod_evasive?
     tidy up state machine
     make a fabric.defer_job helper
