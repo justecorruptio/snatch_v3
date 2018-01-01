@@ -1,3 +1,6 @@
+html {
+    touch-action: none;
+}
 body {
     height: calc(100vh - 100px);
     user-select: none;
@@ -113,12 +116,14 @@ input:invalid {
     font-size: 120%;
     pointer-events: none;
 }
-#snatch-keyboard>div:active>div {
+#snatch-keyboard>div.snatch-key-active>div {
     background-color: #7b00ff;
     color: #fff;
     position: absolute;
     top: -2rem;
     height: 4.5rem;
+    font-size: 150%;
+    font-weight: 400;
 }
 @media (max-width: 575.99px) {
     .snatch-area-inputs-play {

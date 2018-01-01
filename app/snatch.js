@@ -46,6 +46,18 @@ function cleanInput() {
     $el.val(val);
 }
 
+function eventKeyboardIndex(event) {
+    var $el = $('#snatch-keyboard');
+    var offset = $el.offset();
+    var x = event.pageX;
+    var y = event.pageY;
+    var h = $el.height();
+    var w = $el.width();
+    var idx = ((x - offset.left)*9/w|0) + 9 * ((y - offset.top)*3/h|0);
+    return idx;
+    return "QWERTYUIOASDFGHJKLZXCVBNMP<"[idx];
+}
+
 function showPage(page) {
     $('.snatch-page').hide();
     $('.snatch-page-' + page).show();
@@ -221,6 +233,7 @@ function apiPlayGame() {
     var word = $('#snatch-input-word').val();
     if(word.length < 4) {
         alert('Minimum word length is 4');
+        $('#snatch-input-word').val('')
         return;
     }
     return $.ajax(settings.baseUrl + `/${game.name}/play`, {
@@ -391,15 +404,29 @@ $(function() {
     });
 
     for(var i = 0; i < 27; i++) {
+        var letter;
         $('#snatch-keyboard').append(
-            $(`<div><div>${"QWERTYUIOASDFGHJKLZXCVBNMP<"[i]}</div></div>`)
+            $(`<div class="snatch-key-${i}"><div>${"QWERTYUIOASDFGHJKLZXCVBNMP<"[i]}</div></div>`)
         );
     }
-     $('#snatch-keyboard>div').on('click', function() {
-        var $el = $(this),
+
+    $('#snatch-keyboard').on('touchstart', function(event) {
+        var idx = eventKeyboardIndex(event.originalEvent.touches[0]);
+        $('.snatch-key-' + idx).addClass('snatch-key-active');
+    });
+
+    $('#snatch-keyboard').on('touchmove', function(event) {
+        var idx = eventKeyboardIndex(event.originalEvent.changedTouches[0]);
+        $('.snatch-key-active').removeClass('snatch-key-active');
+        $('.snatch-key-' + idx).addClass('snatch-key-active');
+    });
+
+    $('#snatch-keyboard').on('touchend', function(event) {
+        var idx = eventKeyboardIndex(event.originalEvent.changedTouches[0]),
             $word = $('#snatch-input-word'),
             word = $word.val(),
-            c = $el.find('div').text();
+            c = "QWERTYUIOASDFGHJKLZXCVBNMP<"[idx];
+        $('.snatch-key-active').removeClass('snatch-key-active');
         if(c == '<') {
             if(word.length > 0) {
                 $word.val(word.substr(0, word.length - 1));
@@ -408,7 +435,7 @@ $(function() {
         else {
             $word.val(word + c);
         }
-     });
+    });
 
     $('#snatch-button-create-next-game').on('click', function() {
         pollXhr.abort();
