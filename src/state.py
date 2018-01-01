@@ -57,5 +57,6 @@ class State(dict):
     def load(self, key):
         serialized = fabric.load(key)
         if serialized is None:
-            return None
+            return False
         self.update(**json.loads(serialized))
+        return True

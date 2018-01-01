@@ -56,6 +56,12 @@ class Job(object):
             raise FabricException('Job not sent')
         return json.loads(redis.blpop(self.result_key)[1])
 
+    @property
+    def result_json(self):
+        if self.result_key is None:
+            raise FabricException('Job not sent')
+        return redis.blpop(self.result_key)[1]
+
 
 class Fabric(object):
     """Singleton?"""

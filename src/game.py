@@ -275,7 +275,8 @@ class Game(object):
 
             start_step = end_step = None
             try:
-                game.state.load(game.game_key)
+                if not game.state.load(game.game_key):
+                    raise GameError('Game not found.')
                 start_step = game.state.step
                 result = getattr(game, action)(*args)
                 end_step = game.state.step

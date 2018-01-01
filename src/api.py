@@ -6,6 +6,7 @@ import web
 sys.path.append(os.path.dirname(__file__))
 
 from fabric import fabric, Job
+from service import sync
 import settings
 
 
@@ -20,6 +21,7 @@ urls = (
 
 web.config.debug = False
 
+
 class GameCreate(object):
     def POST(self):
         data = json.loads(web.data() or '{}')
@@ -28,9 +30,8 @@ class GameCreate(object):
             link = str(link)
             if len(link) > 5:
                 return '{"error":"invalid link"}'
-        job = Job(action='create', args=[link])
-        fabric.defer_job(settings.QUEUE_NAME, job)
-        return json.dumps(job.result)
+        return sync.create(None, [link], as_json=True)
+
 
 class GameJoin(object):
     def POST(self, name):
@@ -40,19 +41,21 @@ class GameJoin(object):
             return '{"error":"handle missing"}'
         if len(handle) > 25:
             return '{"error":"handle too long"}'
-        job = Job(action='join', name=name, args=[handle])
-        fabric.defer_job(settings.QUEUE_NAME, job)
-        return json.dumps(job.result)
+
+
+        return sync.join(name, [handle], as_json=True)
+
 
 class GamePoll(object):
     def GET(self, name):
         data = web.input() or {}
         step = data.get('step', None)
         if step is None:
-            job = Job(action='fetch', name=name)
-            fabric.defer_job(settings.QUEUE_NAME, job)
-            return json.dumps(job.result)
-        return fabric.wait('channel:%s' % (name,), timeout=60 * 10)
+            # TODO: call state.load directly
+            return sync.fetch(name, [], as_json=True)
+        else:
+            return fabric.wait('channel:%s' % (name,), timeout=600)
+
 
 class GameStart(object):
     def POST(self, name):
@@ -60,9 +63,8 @@ class GameStart(object):
         nonce = data.get('nonce', None)
         if not nonce:
             return '{"error":"nonce missing"}'
-        job = Job(action='start', name=name, args=[nonce])
-        fabric.defer_job(settings.QUEUE_NAME, job)
-        return json.dumps(job.result)
+        return sync.start(name, [nonce], as_json=True)
+
 
 class GamePlay(object):
     def POST(self, name):
@@ -75,10 +77,8 @@ class GamePlay(object):
         if not word:
             return '{"error":"word missing"}'
         word = word.upper()
+        return sync.play(name, [nonce, word], as_json=True)
 
-        job = Job(action='play', name=name, args=[nonce, word])
-        fabric.defer_job(settings.QUEUE_NAME, job)
-        return json.dumps(job.result)
 
 class GameAddBot(object):
     def POST(self, name):
@@ -91,9 +91,9 @@ class GameAddBot(object):
         if not level:
             return '{"error":"level missing"}'
 
-        job = Job(action='add_bot', name=name, args=[nonce, level])
-        fabric.defer_job(settings.QUEUE_NAME, job)
-        return json.dumps(job.result)
+        # TODO: make this a start() option
+        return sync.add_bot(name, [nonce, level], as_json=True)
+
 
 class HeadersMiddleware(object):
     def __init__(self, app):
@@ -107,6 +107,7 @@ class HeadersMiddleware(object):
             return start_response(status, headers, exc_info)
 
         return self.app(environ, custom_start_response)
+
 
 app = web.application(urls, globals())
 
