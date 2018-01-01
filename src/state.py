@@ -48,14 +48,14 @@ class State(dict):
 
     def store(self, key, initial=False):
         return fabric.store(
-            key,
+            'game:' + key,
             json.dumps(self),
             nx=initial,
             ex=settings.GAME_TTL,
         )
 
     def load(self, key):
-        serialized = fabric.load(key)
+        serialized = fabric.load('game:' + key)
         if serialized is None:
             return False
         self.update(**json.loads(serialized))

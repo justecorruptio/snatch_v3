@@ -7,6 +7,7 @@ sys.path.append(os.path.dirname(__file__))
 
 from fabric import fabric, Job
 from service import sync
+from state import State
 import settings
 
 
@@ -41,8 +42,6 @@ class GameJoin(object):
             return '{"error":"handle missing"}'
         if len(handle) > 25:
             return '{"error":"handle too long"}'
-
-
         return sync.join(name, [handle], as_json=True)
 
 
@@ -51,10 +50,13 @@ class GamePoll(object):
         data = web.input() or {}
         step = data.get('step', None)
         if step is None:
-            # TODO: call state.load directly
-            return sync.fetch(name, as_json=True)
+            state = State()
+            if state.load(name):
+                return json.dumps(state.cleaned())
+            else:
+                return '{"error":"Game not found."}'
         else:
-            return fabric.wait('channel:%s' % (name,), timeout=600)
+            return fabric.wait('channel:' + name, timeout=600)
 
 
 class GameStart(object):

@@ -30,7 +30,7 @@ class GameError(Exception):
     log: list of log messages, recent last
     players: list of (name, words) tuples
     nonces: dict mapping nonce key to player number
-    link: name of the next game.
+    next_name: name of the next game.
 '''
 
 
@@ -47,14 +47,11 @@ class Game(object):
         success = False
         while not success:
             game.name = rand_chars(5)
-            success = game.state.store(game.game_key, initial=True)
+            success = game.state.store(game.name, initial=True)
 
         if prev_name:
             async.link(prev_name, [game.name])
         return game
-
-    def fetch(self):
-        return self.state.cleaned()
 
     def link(self, next_name):
         self.state.next_name = next_name
@@ -240,20 +237,16 @@ class Game(object):
         name = job.data['name']
         game = cls(name)
 
-        # everything but the fetch action modifies the state
-        modifies_state = action != 'fetch'
-
         try:
             has_lock = False
-            if modifies_state:
-                has_lock = fabric.acquire(game.lock_key)
-                if not has_lock:
-                    job.retry()
-                    return
+            has_lock = fabric.acquire('lock:' + game.name)
+            if not has_lock:
+                job.retry()
+                return
 
             start_step = end_step = None
             try:
-                if not game.state.load(game.game_key):
+                if not game.state.load(game.name):
                     raise GameError('Game not found.')
                 start_step = game.state.step
                 result = getattr(game, action)(*args)
@@ -268,17 +261,16 @@ class Game(object):
             if result is not None:
                 job.write_result(result)
 
-            if modifies_state:
-                game.state.store(game.game_key)
-                if start_step != end_step:
-                    fabric.notify(
-                        game.channel_key,
-                        json.dumps(game.state.cleaned()),
-                    )
+            game.state.store(game.name)
+            if start_step != end_step:
+                fabric.notify(
+                    'channel:' + game.name,
+                    json.dumps(game.state.cleaned()),
+                )
 
         finally:
             if has_lock:
-                fabric.release(game.lock_key)
+                fabric.release('lock:' + game.name)
 
         return result
 
@@ -286,15 +278,3 @@ class Game(object):
         self.state.log = self.state.log[-4:] + [
             (self.state.step,) + tuple(message),
         ]
-
-    @property
-    def game_key(self):
-        return 'game:%s' % (self.name,)
-
-    @property
-    def lock_key(self):
-        return 'lock:%s' % (self.name,)
-
-    @property
-    def channel_key(self):
-        return 'channel:%s' % (self.name,)
