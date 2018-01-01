@@ -5,10 +5,9 @@ general:
 backend:
     rate limit - mod_evasive?
     tidy up state machine
-    make a fabric.defer_job helper
     stats API
     cleanup logging
-    bug: request is made after notify() publish
+    make the polling step mean something
 
 frontend:
     debounce
