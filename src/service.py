@@ -9,7 +9,9 @@ class Service(object):
         self.wait = wait
 
     def __getattr__(self, action):
-        def wrapped(name, args, delay=0, as_json=False):
+        def wrapped(name, args=None, delay=0, as_json=False):
+            if args is None:
+                args = []
             job = Job(action=action, name=name, args=args)
             fabric.defer_job(
                 settings.QUEUE_NAME,

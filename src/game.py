@@ -5,6 +5,7 @@ import time
 
 from anagram import anagram
 from fabric import fabric, Job
+from service import sync, async
 import settings
 from state import (
     State,
@@ -49,10 +50,7 @@ class Game(object):
             success = game.state.store(game.game_key, initial=True)
 
         if prev_name:
-            fabric.defer_job(
-                settings.QUEUE_NAME,
-                Job(action='link', name=prev_name, args=[game.name]),
-            )
+            async.link(prev_name, [game.name])
         return game
 
     def fetch(self):
@@ -89,17 +87,10 @@ class Game(object):
 
         self.log('start')
 
-        fabric.defer_job(
-            settings.QUEUE_NAME,
-            Job(action='peel', name=self.name),
-            delay=settings.PEEL_DELAY,
-        )
+        async.peel(self.name, delay=settings.PEEL_DELAY)
 
         if 'BOT' in self.state.nonces:
-            fabric.defer_job(
-                settings.QUEUE_NAME,
-                Job(action='loop_bot', name=self.name),
-            )
+            async.loop_bot(self.name)
 
         return {}
 
@@ -118,24 +109,16 @@ class Game(object):
             # calling this now is guaranteed to not actually end
             self.end()
         else:
-            fabric.defer_job(
-                settings.QUEUE_NAME,
-                Job(action='peel', name=self.name),
-                delay=settings.PEEL_DELAY,
-            )
+            async.peel(self.name, delay=settings.PEEL_DELAY)
 
         return None
 
     def end(self):
         delayed_time = time.time() - self.state.start_ts
         if delayed_time < settings.ENDGAME_TIME:
-            fabric.defer_job(
-                settings.QUEUE_NAME,
-                Job(action='end', name=self.name),
-                # fix a tiny race condition, repeatedly try to end
-                # the game until it is.
-                delay=1,
-            )
+            # fix a tiny race condition, repeatedly try to end
+            # the game until it is.
+            async.end(self.name, delay=1)
             return
 
         self.state.phase = PHASE_ENDED
@@ -240,12 +223,7 @@ class Game(object):
             if target:
                 self.play('BOT', target, how)
 
-        fabric.defer_job(
-            settings.QUEUE_NAME,
-            Job(action='loop_bot', name=self.name),
-            delay=loop_ttl,
-        )
-
+        async.loop_bot(self.name, delay=loop_ttl)
         return {}
 
     @classmethod

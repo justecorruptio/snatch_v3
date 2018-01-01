@@ -52,7 +52,7 @@ class GamePoll(object):
         step = data.get('step', None)
         if step is None:
             # TODO: call state.load directly
-            return sync.fetch(name, [], as_json=True)
+            return sync.fetch(name, as_json=True)
         else:
             return fabric.wait('channel:%s' % (name,), timeout=600)
 
