@@ -6,39 +6,18 @@ import time
 from anagram import anagram
 from fabric import fabric, Job
 import settings
+from state import (
+    State,
+    PHASE_LOBBY,
+    PHASE_STARTED,
+    PHASE_ENDGAME,
+    PHASE_ENDED,
+)
 from utils import rand_chars
-
-
-PHASE_LOBBY = 1
-PHASE_STARTED = 2
-PHASE_ENDGAME = 3
-PHASE_ENDED = 4
 
 
 class GameError(Exception):
     pass
-
-
-class State(dict):
-    def __getattr__(self, key):
-        return self[key]
-
-    def __setattr__(self, key, value):
-        self[key] = value
-
-    def cleaned(self):
-        ret = dict(self)
-        if 'nonces' in ret:
-            if 'BOT' in ret['nonces']:
-                ret['has_bot'] = True
-            ret.pop('nonces')
-        if 'bag' in ret:
-            ret['bag'] = len(ret['bag'])
-        if 'start_ts' in ret:
-            ret['time_left'] = (
-                settings.ENDGAME_TIME - (time.time() - ret['start_ts'])
-            )
-        return ret
 
 
 ''' **** SCHEMA ****
@@ -58,29 +37,16 @@ class Game(object):
 
     def __init__(self, name=None):
         self.name = name
-        self.state = None
-
-    def reset(self):
-        self.state = State(
-            phase=PHASE_LOBBY,
-            step=0,
-            start_ts=time.time(),
-            bag=settings.LETTERS,
-            table='',
-            log=[],
-            players=[],
-            nonces={},
-            next_name=None,
-        )
+        self.state = State()
 
     @classmethod
     def create(cls, prev_name=None):
         game = cls()
-        game.reset()
+        game.state.reset()
         success = False
         while not success:
             game.name = rand_chars(5)
-            success = game.store(initial=True)
+            success = game.state.store(game.game_key, initial=True)
 
         if prev_name:
             fabric.defer_job(
@@ -254,7 +220,7 @@ class Game(object):
         return {}
 
     def loop_bot(self):
-        if self.state.phase == 4:
+        if self.state.phase == PHASE_ENDED:
             return {}
 
         player_num = self.state.nonces['BOT']
@@ -263,7 +229,7 @@ class Game(object):
             settings.BOTS[handle]
         )
 
-        if self.state.phase in (2, 3):
+        if self.state.phase in (PHASE_STARTED, PHASE_ENDGAME):
             target, how = anagram.bot(
                 self.state.table,
                 sum([words for _, words in self.state.players], []),
@@ -309,7 +275,7 @@ class Game(object):
 
             start_step = end_step = None
             try:
-                game.load()
+                game.state.load(game.game_key)
                 start_step = game.state.step
                 result = getattr(game, action)(*args)
                 end_step = game.state.step
@@ -324,7 +290,7 @@ class Game(object):
                 job.write_result(result)
 
             if modifies_state:
-                game.store()
+                game.state.store(game.game_key)
                 if start_step != end_step:
                     fabric.notify(
                         game.channel_key,
@@ -353,15 +319,3 @@ class Game(object):
     @property
     def channel_key(self):
         return 'channel:%s' % (self.name,)
-
-    def store(self, initial=False):
-        serialized = json.dumps(self.state)
-        return fabric.store(self.game_key, serialized,
-            nx=initial, ex=settings.GAME_TTL,
-        )
-
-    def load(self):
-        serialized = fabric.load(self.game_key)
-        if serialized is None:
-            raise GameError('game not found')
-        self.state = State(**json.loads(serialized))
