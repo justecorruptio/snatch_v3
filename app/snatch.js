@@ -233,7 +233,7 @@ function apiPlayGame() {
     var word = $('#snatch-input-word').val();
     if(word.length < 4) {
         alert('Minimum word length is 4');
-        $('#snatch-input-word').val('')
+        $('.snatch-word').val('')
         return;
     }
     return $.ajax(settings.baseUrl + `/${game.name}/play`, {
@@ -243,7 +243,7 @@ function apiPlayGame() {
             word: word
         })
     }).done(function(data) {
-        $('#snatch-input-word').val('');
+        $('.snatch-word').val('');
         if('error' in data) {
             alert(data.error);
             return Promise.reject();
@@ -318,11 +318,18 @@ $(function() {
     $('#snatch-input-handle').on('change', cleanInput);
     $('#snatch-input-word').on('change', cleanInput);
 
-    $('#snatch-input-word').on('keypress', function(event) {
+    /*
+    $('#snatch-input-word').on('keydown', function(event) {
+        event.preventDefault();
+        return false;
+    });
+    */
+    $('#snatch-input-word').on('keydown', function(event) {
         event.preventDefault();
         var i = event.which,
             c = '',
             $el = $(this),
+            $both = $('.snatch-word'),
             val = $el.val();
         if (i >= 97 && i <= 122){
             c = String.fromCharCode(i - 32);
@@ -332,14 +339,15 @@ $(function() {
         }
 
         if (c != '' && val.length < 15) {
-            $el.val(val + c);
+            $both.val(val + c);
         }
         else if (i == 8 && val != '') {
-            $el.val(val.substr(0, val.length - 1));
+            $both.val(val.substr(0, val.length - 1));
         }
         else if (i == 13) {
             apiPlayGame();
         }
+        return false;
     });
 
     $('#snatch-input-name').on('keypress', function(event) {
@@ -423,7 +431,7 @@ $(function() {
 
     $('#snatch-keyboard').on('touchend', function(event) {
         var idx = eventKeyboardIndex(event.originalEvent.changedTouches[0]),
-            $word = $('#snatch-input-word'),
+            $word = $('.snatch-word'),
             word = $word.val(),
             c = "QWERTYUIOASDFGHJKLZXCVBNMP<"[idx];
         $('.snatch-key-active').removeClass('snatch-key-active');

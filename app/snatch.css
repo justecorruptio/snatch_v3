@@ -5,9 +5,13 @@ body {
     height: calc(100vh - 100px);
     user-select: none;
     -webkit-user-select: none;
+    -moz-user-select: none;
 }
 input:invalid {
     color: red;
+}
+input:read-only {
+    background-color: #fff!important;
 }
 
 #snatch-display-name{
@@ -132,7 +136,7 @@ input:invalid {
         left: 0px;
         right: 0px;
     }
-    #snatch-input-word {
+    .snatch-word {
         pointer-events: none;
     }
 }

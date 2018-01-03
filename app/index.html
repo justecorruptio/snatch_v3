@@ -155,8 +155,16 @@
             <div class="snatch-area-inputs snatch-area-inputs-play collapse">
                 <div class="d-flex flex-row mb-2 mt-sm-5">
                     <div class="ml-1">
+                        <input id="snatch-mirror-word" type="text"
+                            class="form-control snatch-word d-inline d-sm-none"
+                            placeholder="Enter a word"
+                            autocomplete="off" autocorrect="off"
+                            autocapitalize="off" spellcheck="false"
+                            pattern="[A-Za-z]{4,15}" maxlength="15"
+                            readonly
+                        ></input>
                         <input id="snatch-input-word" type="text"
-                            class="form-control"
+                            class="form-control snatch-word d-none d-sm-inline"
                             placeholder="Enter a word"
                             autocomplete="off" autocorrect="off"
                             autocapitalize="off" spellcheck="false"
