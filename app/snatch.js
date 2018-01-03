@@ -434,13 +434,14 @@ $(function() {
             $word = $('.snatch-word'),
             word = $word.val(),
             c = "QWERTYUIOASDFGHJKLZXCVBNMP<"[idx];
+
         $('.snatch-key-active').removeClass('snatch-key-active');
         if(c == '<') {
             if(word.length > 0) {
                 $word.val(word.substr(0, word.length - 1));
             }
         }
-        else {
+        else if(c){
             $word.val(word + c);
         }
     });
