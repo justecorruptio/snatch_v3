@@ -4,16 +4,20 @@ var lastLogStep = -1;
 var pollXhr;
 
 function alert(message) {
-    var $el = $('#snatch-alert');
+    var $el = $('#snatch-alert'),
+        $msg = $('.snatch-message');
     $el.find('.badge').text(message);
-    $el.stop(true);
+    $msg.stop(true);
+    $msg.hide();
     $el.fadeIn(100).delay(1500).fadeOut();
 }
 
 function log(message) {
-    var $el = $('#snatch-log');
+    var $el = $('#snatch-log'),
+        $msg = $('.snatch-message');
     $el.find('.badge').text(message);
-    $el.stop(true);
+    $msg.stop(true);
+    $msg.hide();
     $el.fadeIn(100).delay(3000).fadeOut();
 }
 
