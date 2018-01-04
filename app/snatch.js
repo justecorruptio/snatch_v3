@@ -57,9 +57,8 @@ function eventKeyboardIndex(event) {
     var y = event.pageY;
     var h = $el.height();
     var w = $el.width();
-    var idx = ((x - offset.left)*9/w|0) + 9 * ((y - offset.top)*3/h|0);
+    var idx = ((x - offset.left)*20/w|0) + 20 * ((y - offset.top)*3/h|0);
     return idx;
-    return "QWERTYUIOASDFGHJKLZXCVBNMP<"[idx];
 }
 
 function showPage(page) {
@@ -415,11 +414,21 @@ $(function() {
         apiPlayGame();
     });
 
-    for(var i = 0; i < 27; i++) {
-        var letter;
-        $('#snatch-keyboard').append(
-            $(`<div class="snatch-key-${i}"><div>${"QWERTYUIOASDFGHJKLZXCVBNMP<"[i]}</div></div>`)
-        );
+    var key_layout = "QQWWEERRTTYYUUIIOOPP AASSDDFFGGHHJJKKLL   ZZXXCCVVBBNNMM <<<";
+    for(var i = 0; i < key_layout.length; i++) {
+        if (key_layout[i] == ' ') {
+            $('#snatch-keyboard').append($('<div class="snatch-key-spacer"></div>'))
+        }
+        else {
+            var classes = ' snatch-key-' + i;
+            while(key_layout[i] == key_layout[i+1]) {
+                i ++;
+                classes += ' snatch-key-' + i;
+            }
+            $('#snatch-keyboard').append(
+                $(`<div class="snatch-key ${classes}"><div>${key_layout[i]}</div></div>`)
+            );
+        }
     }
 
     $('#snatch-keyboard').on('touchstart', function(event) {
@@ -437,7 +446,7 @@ $(function() {
         var idx = eventKeyboardIndex(event.originalEvent.changedTouches[0]),
             $word = $('.snatch-word'),
             word = $word.val(),
-            c = "QWERTYUIOASDFGHJKLZXCVBNMP<"[idx];
+            c = key_layout[idx];
 
         $('.snatch-key-active').removeClass('snatch-key-active');
         if(c == '<') {
@@ -445,7 +454,7 @@ $(function() {
                 $word.val(word.substr(0, word.length - 1));
             }
         }
-        else if(c){
+        else if(c && c != ' '){
             $word.val(word + c);
         }
     });

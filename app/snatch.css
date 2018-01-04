@@ -96,8 +96,8 @@ input:read-only {
 .snatch-tile-p-6 { background-color: #00ccb8; }
 .snatch-tile-p-7 { background-color: #007bff; }
 
-#snatch-keyboard div {
-    width: calc(100vw / 9 - .4rem);
+.snatch-key, .snatch-key>div {
+    width: calc(10vw - .4rem);
     height: 2.5rem;
 }
 #snatch-keyboard>div {
@@ -141,9 +141,10 @@ input:read-only {
     }
 }
 
-flexbreak {
-    flex-basis: 100%;
-    width: 0px;
-    height: 0px;
-    overflow: hidden;
+.snatch-key-spacer {
+    width: calc(5vw - .4rem);
+}
+
+.snatch-key:last-child, .snatch-key:last-child>div {
+    width: calc(15vw - .4rem);
 }
