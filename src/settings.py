@@ -1,3 +1,5 @@
+import logging
+from logging.config import dictConfig
 import os
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), '..')
@@ -42,3 +44,31 @@ BOTS = {
     'InsaneBot': (3, 16, 10, [1, 0, 2]),
     'DeathBot': (4, 3.3, 15, [1, 0, 2, 3]),
 }
+
+dictConfig({
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'default': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'daemon': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'default',
+            'filename': '/var/log/snatch/snatch.log',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 1000,
+        },
+    },
+    'loggers': {
+        'daemon': {
+            'handlers': ['daemon'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    }
+})

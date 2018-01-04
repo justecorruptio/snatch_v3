@@ -13,6 +13,6 @@ if [[ ! -z "$last_pid" ]] ; then
     kill $last_pid
 fi
 
-python daemon.py &>/tmp/snatch.log &
+python daemon.py &
 disown $!
 popd &>/dev/null

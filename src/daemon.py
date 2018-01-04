@@ -1,4 +1,5 @@
 import json
+import logging
 import sys
 import time
 
@@ -15,6 +16,7 @@ class Client(object):
 class Daemon(object):
 
     def __init__(self):
+        self.logger = logging.getLogger('daemon')
         self.running = True
         # XXX: write better interupt code
 
@@ -27,21 +29,19 @@ class Daemon(object):
                 result = Game.execute(job)
                 end_ts = time.time()
             except Exception, e:
-                if settings.DEBUG:
-                    import traceback
-                    sys.stderr.write('ERROR! ' + str(job.data) + '\n')
-                    sys.stderr.write(traceback.format_exc() + '\n')
+                import traceback
+                self.logger.error('DATA: ' + str(job.data))
+                self.logger.error(traceback.format_exc())
             else:
-                if settings.DEBUG:
-                    sys.stderr.write(
-                        '%0.2f + %0.4f (%0.4f off) | %s -> %s\n' % (
-                            start_ts,
-                            end_ts - start_ts,
-                            start_ts - planned_ts,
-                            job.data,
-                            result,
-                        ),
-                    )
+                self.logger.info(
+                    '%0.2f + %0.4f (%0.4f off) | %s -> %s' % (
+                        start_ts,
+                        end_ts - start_ts,
+                        start_ts - planned_ts,
+                        job.data,
+                        result,
+                    ),
+                )
 
 
 if __name__ == '__main__':
