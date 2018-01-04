@@ -1,6 +1,8 @@
 import json
+import logging
 import os
 import sys
+import time
 import web
 
 sys.path.append(os.path.dirname(__file__))
@@ -104,9 +106,10 @@ class GameAddBot(object):
         return sync.add_bot(name, [nonce, level], as_json=True)
 
 
-class HeadersMiddleware(object):
+class SnatchMiddleware(object):
     def __init__(self, app):
         self.app = app
+        self.logger = logging.getLogger('api')
 
     def __call__(self, environ, start_response):
 
@@ -115,13 +118,27 @@ class HeadersMiddleware(object):
             headers.append(('Content-Type', 'application/json'))
             return start_response(status, headers, exc_info)
 
-        return self.app(environ, custom_start_response)
+        try:
+            start_time = time.time()
+            for event in self.app(environ, custom_start_response):
+                yield event
+        finally:
+            end_time = time.time()
+            qs = environ.get('QUERY_STRING', '')
+            if qs:
+                qs = '?' + qs
+            self.logger.info('%0.04f | %s %s%s' % (
+                end_time - start_time,
+                environ.get('REQUEST_METHOD'),
+                environ.get('PATH_INFO'),
+                qs,
+            ))
 
 
 app = web.application(urls, globals())
 
 
 if __name__ == '__main__':
-    app.run(HeadersMiddleware)
+    app.run(SnatchMiddleware)
 else:
-    application = app.wsgifunc(HeadersMiddleware)
+    application = app.wsgifunc(SnatchMiddleware)

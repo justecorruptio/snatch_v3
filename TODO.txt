@@ -7,7 +7,6 @@ backend:
     rate limit - mod_evasive?
     tidy up state machine
     stats API
-    make the polling step mean something
 
 frontend:
     debounce

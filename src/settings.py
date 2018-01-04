@@ -58,7 +58,16 @@ dictConfig({
             'level': 'DEBUG',
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'default',
-            'filename': '/var/log/snatch/snatch.log',
+            'filename': '/var/log/snatch/daemon.log',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 1000,
+        },
+        'api': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'default',
+            'filename': '/var/log/snatch/api.log',
             'when': 'midnight',
             'interval': 1,
             'backupCount': 1000,
@@ -67,6 +76,11 @@ dictConfig({
     'loggers': {
         'daemon': {
             'handlers': ['daemon'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'api': {
+            'handlers': ['api'],
             'level': 'DEBUG',
             'propagate': False,
         },
