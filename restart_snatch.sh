@@ -13,6 +13,9 @@ if [[ ! -z "$last_pid" ]] ; then
     kill $last_pid
 fi
 
+sudo -u www-data bash << EOF
 python daemon.py &
 disown $!
+EOF
+
 popd &>/dev/null
