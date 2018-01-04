@@ -49,12 +49,19 @@ class GamePoll(object):
     def GET(self, name):
         data = web.input() or {}
         step = data.get('step', None)
-        if step is None:
-            state = State()
-            if state.load(name):
-                return json.dumps(state.cleaned())
-            else:
-                return '{"error":"Game not found."}'
+
+        try:
+            if step is not None:
+                step = int(step)
+        except ValueError:
+            return '{"error":"Step should be integer."}'
+
+        state = State()
+        if not state.load(name):
+            return '{"error":"Game not found."}'
+
+        if step is None or state.step > step:
+            return json.dumps(state.cleaned())
         else:
             return fabric.wait('channel:' + name, timeout=600)
 

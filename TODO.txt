@@ -1,6 +1,7 @@
 general:
     bloom filter to test wordiness before hitting backend
     support different game settings
+    do some profiling
 
 backend:
     rate limit - mod_evasive?
