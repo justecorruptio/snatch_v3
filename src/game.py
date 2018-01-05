@@ -84,7 +84,7 @@ class Game(object):
 
         self.log('start')
 
-        async.peel(self.name, delay=settings.PEEL_DELAY)
+        async.peel(self.name, delay=1)
 
         if 'BOT' in self.state.nonces:
             async.loop_bot(self.name)
