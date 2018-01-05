@@ -106,7 +106,9 @@ function renderBoard(data) {
         for(j = 0; j< words.length; j++) {
             score += words[j].length;
         }
-        $row.append($(`<div class="snatch-handle snatch-handle-p-${i}">${score}</div>`));
+        $row.append($(`<div class="snatch-handle snatch-handle-score snatch-handle-p-${i}">
+            ${score}
+        </div>`));
         $row.append($(`<div class="snatch-handle snatch-handle-p-${i}">${h}</div>`));
         for(j = 0; j< words.length; j++) {
             $row.append($(`<div class="snatch-tile snatch-tile-p-${i}">${words[j]}</div>`));
@@ -321,12 +323,6 @@ $(function() {
     $('#snatch-input-handle').on('change', cleanInput);
     $('#snatch-input-word').on('change', cleanInput);
 
-    /*
-    $('#snatch-input-word').on('keydown', function(event) {
-        event.preventDefault();
-        return false;
-    });
-    */
     $('#snatch-input-word').on('keydown', function(event) {
         event.preventDefault();
         var i = event.which,
@@ -398,7 +394,11 @@ $(function() {
         }
         game.name = $('#snatch-input-name').val().toUpperCase();
         apiJoinGame();
-    })
+    });
+
+    $('#snatch-button-howto').on('click', function() {
+        startHowto();
+    });
 
     $('#snatch-display-add-bot>button').on('click', function() {
         var $el = $(this),

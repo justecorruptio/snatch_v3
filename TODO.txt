@@ -11,7 +11,6 @@ backend:
 frontend:
     debounce
     spinner for high latency on mobile.
-    how to play page
     bug: make it so you can paste to game name input
     copyright
     splash
