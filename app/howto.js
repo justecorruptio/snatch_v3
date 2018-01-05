@@ -90,7 +90,7 @@ function displayHelp(el_id, placement, button, trigger, message) {
     }
     $el.popover({
         container: 'body',
-        title: 'Tutorial<small class="text-muted float-right popover-close">Close Tutorial</small>',
+        title: 'Tutorial<small class="text-muted float-right popover-close">End Tutorial</small>',
         content: message,
         placement: placement,
         html: true,
