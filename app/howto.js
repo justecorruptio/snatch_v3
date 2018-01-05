@@ -60,11 +60,11 @@ var howtoScript = [
     [
         '#snatch-button-leave', 'bottom', 'Continue', 'click',
         `Lastly, you may click &times; to quit the current game,
-        and return to the main menu.`,
+        and return to the main screen.`,
     ],
     [
         '#snatch-display-players', 'bottom', 'End Tutorial', '',
-        'Snatch is best played with your friends, have fun!',
+        'Snatch is best played with friends, have fun!',
     ],
 ];
 
@@ -127,6 +127,3 @@ function startHowto() {
     howtoStep = 0;
     displayHelp(...howtoScript[howtoStep]);
 }
-
-$(function () {
-});
