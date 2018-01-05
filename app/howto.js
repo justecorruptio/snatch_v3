@@ -26,13 +26,13 @@ var howtoScript = [
         'Gray letter tiles will start appearing in a few seconds.',
     ],
     [
-        '.snatch-word-wrapper', 'top', 'Continue', '',
+        '.snatch-word-wrapper', 'bottom', 'Continue', '',
         // TODO: custom letter limit
         `If you can make a word (min. length 4) with the gray tiles,
         type it here to claim it.`
     ],
     [
-        '.snatch-word-wrapper', 'top', 'Continue', '',
+        '.snatch-word-wrapper', 'bottom', 'Continue', '',
         `For example, if you see:
             <span class="badge badge-secondary">T</span>
             <span class="badge badge-secondary">P</span>
@@ -41,12 +41,12 @@ var howtoScript = [
         you can type in the word "PART".`
     ],
     [
-        '.snatch-word-wrapper', 'top', 'Continue', '',
+        '.snatch-word-wrapper', 'bottom', 'Continue', '',
         `Furthermore, you can steal words by adding one or
         more gray letters to an existing word.`
     ],
     [
-        '.snatch-word-wrapper', 'top', 'Continue', '',
+        '.snatch-word-wrapper', 'bottom', 'Continue', '',
         `For example, if you or another player has
             <span class="badge badge-primary">HEAT</span>
         and a gray letter
