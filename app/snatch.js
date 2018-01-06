@@ -15,11 +15,11 @@ function message(msg, level, duration) {
 }
 
 function alert(msg) {
-    message(msg, 'danger', 1000);
+    message(msg, 'danger', 5000);
 }
 
 function log(msg) {
-    message(msg, 'info', 1500);
+    message(msg, 'info', 10000);
 }
 
 function doCountdown(timeLeft, prev) {
