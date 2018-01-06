@@ -120,6 +120,8 @@ function displayHelp(el_id, placement, button, trigger, message) {
 
     $('.popover-close').one('click', function () {
         $el.popover('dispose');
+        $el.off(trigger, dismiss_func);
+        $dismiss_button.off('click', dismiss_func);
     });
 }
 

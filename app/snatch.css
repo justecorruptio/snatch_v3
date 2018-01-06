@@ -2,10 +2,23 @@ html {
     touch-action: none;
 }
 body {
-    height: calc(100vh - 100px);
+    height: calc(100vh);
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+    background:
+    repeating-linear-gradient(
+        135deg,
+        transparent,
+        transparent 10px,
+        #f8f8f8 10px,
+        #f8f8f8 20px
+    ),
+    linear-gradient(
+        to bottom,
+        #f8f8f8,
+        #eee8f2
+    );
 }
 input:invalid {
     color: red;
