@@ -78,6 +78,7 @@ function reset() {
     delete game.nonce;
     delete game.step;
     delete game.phase;
+    delete game.min_word;
     lastLogStep = 0;
     clearTimeout(countdownInterval);
     $('#snatch-input-name').val('');

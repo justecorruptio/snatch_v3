@@ -27,7 +27,7 @@ var howtoScript = [
     ],
     [
         '.snatch-word-wrapper', 'bottom', 'Continue', '',
-        `If you can make a word (min. length ${game.min_word}) with the gray tiles,
+        ()=>`If you can make a word (minimum length ${game.min_word}) with the gray tiles,
         type it here to claim it.`
     ],
     [
