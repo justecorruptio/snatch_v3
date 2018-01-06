@@ -2,23 +2,10 @@ html {
     touch-action: none;
 }
 body {
-    height: calc(100vh);
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
-    background:
-    repeating-linear-gradient(
-        135deg,
-        transparent,
-        transparent 10px,
-        #f8f8f8 10px,
-        #f8f8f8 20px
-    ),
-    linear-gradient(
-        to bottom,
-        #f8f8f8,
-        #eee8f2
-    );
+    background-color: #9a93bf;
 }
 input:invalid {
     color: red;
@@ -27,11 +14,42 @@ input:read-only {
     background-color: #fff!important;
 }
 
+.transparent {
+    opacity: 0;
+}
+
+.snatch-main {
+    height: calc(100vh);
+    background:
+        repeating-linear-gradient(
+            135deg,
+            transparent,
+            transparent 10px,
+            #f8f8f8 10px,
+            #f8f8f8 20px
+        ),
+        linear-gradient(
+            to bottom,
+            #f8f8f8,
+            #eee8f2
+        );
+}
+
+@media (max-width: 575.99px) {
+    body {
+        background-color: #f8f8f8;
+    }
+    .snatch-main {
+        position: fixed;
+        top: 0px;
+    }
+}
+
 #snatch-display-name{
     user-select: text;
 }
 
-#snatch-alert, #snatch-log {
+.snatch-message {
     pointer-events: none;
 }
 

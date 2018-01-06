@@ -3,22 +3,26 @@ var countdownInterval = 0;
 var lastLogStep = -1;
 var pollXhr;
 
-function alert(message) {
-    var $el = $('#snatch-alert'),
-        $msg = $('.snatch-message');
-    $el.find('.badge').text(message);
-    $msg.stop(true);
-    $msg.hide();
-    $el.fadeIn(100).delay(1500).fadeOut();
+function message(msg, level, duration) {
+    var $el = $('.snatch-message');
+    $el.find('.badge').attr('class', 'w-100 badge badge-' + level).text(msg);
+    $el.stop(true);
+    //$el.hide();
+    //$el.fadeIn(100).delay(duration).fadeOut();
+
+    $el.css({opacity: 0})
+        .animate({opacity: 1}, 100)
+        .delay(duration)
+        .animate({opacity: 0}, 100);
+
 }
 
-function log(message) {
-    var $el = $('#snatch-log'),
-        $msg = $('.snatch-message');
-    $el.find('.badge').text(message);
-    $msg.stop(true);
-    $msg.hide();
-    $el.fadeIn(100).delay(3000).fadeOut();
+function alert(msg) {
+    message(msg, 'danger', 1000);
+}
+
+function log(msg) {
+    message(msg, 'info', 1500);
 }
 
 function doCountdown(timeLeft, prev) {
@@ -317,6 +321,18 @@ $(function() {
         event.preventDefault();
         event.stopPropagation();
     });
+    $('body').bind('touchstart', function preventZoom(e) {
+        var t2 = e.timeStamp,
+            t1 = $(this).data('lastTouch') || t2,
+            dt = t2 - t1,
+            fingers = e.originalEvent.touches.length;
+        $(this).data('lastTouch', t2);
+        if (!dt || dt > 500 || fingers > 1) return;
+
+        e.preventDefault();
+        $(this).trigger('click').trigger('click');
+    });
+
 
     $('#snatch-input-handle').on('change', cleanInput);
     $('#snatch-input-word').on('change', cleanInput);
