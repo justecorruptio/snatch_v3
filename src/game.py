@@ -14,7 +14,7 @@ from state import (
     PHASE_ENDGAME,
     PHASE_ENDED,
 )
-from utils import rand_chars
+from utils import make_bag, rand_chars
 
 
 class GameError(Exception):
@@ -97,6 +97,11 @@ class Game(object):
 
         self.state.phase = PHASE_STARTED
         self.state.start_ts = time.time()
+        letters = [
+            settings.QUICK_LETTERS,
+            settings.LETTERS,
+        ][self.state.options['game_length'] - 1]
+        self.state.bag = make_bag(letters)
         self.state.step += 1
 
         self.log('start')
@@ -188,7 +193,7 @@ class Game(object):
 
         return {}
 
-    def set_options(self, nonce, bot_level=None, min_word=None):
+    def set_options(self, nonce, bot_level=None, min_word=None, game_length=None):
 
         if self.state.phase != PHASE_LOBBY:
             return {'error': 'invalid state'}
@@ -206,6 +211,10 @@ class Game(object):
 
         if min_word is not None:
             self.state.options['min_word'] = min_word
+            self.state.step += 1
+
+        if game_length is not None:
+            self.state.options['game_length'] = game_length
             self.state.step += 1
 
         return {}

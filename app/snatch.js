@@ -129,6 +129,9 @@ function renderBoard(data) {
             $(`#snatch-display-min-word>label`).removeClass('active');
             $(`#snatch-display-min-word>label[data-value="${data.options.min_word}"]`)
                 .addClass('active');
+            $(`#snatch-display-game-length>label`).removeClass('active');
+            $(`#snatch-display-game-length>label[data-value="${data.options.game_length}"]`)
+                .addClass('active');
             break;
         case 2: case 3:
             $('.snatch-area-inputs-play').show();
@@ -421,6 +424,11 @@ $(function() {
     $('#snatch-display-min-word>label').on('click', function(event) {
         var value = $(this).data('value');
         apiSetOptions('min_word', parseInt(value));
+    });
+
+    $('#snatch-display-game-length>label').on('click', function(event) {
+        var value = $(this).data('value');
+        apiSetOptions('game_length', parseInt(value));
     });
 
     $('#snatch-button-start').on('click', function() {
