@@ -92,11 +92,8 @@ class Game(object):
         return {}
 
     def peel(self):
-        letter = random.choice(self.state.bag)
-        self.state.table = self.state.table + letter
-        bag = list(self.state.bag)
-        bag.remove(letter)
-        self.state.bag = ''.join(bag)
+        self.state.table += self.state.bag[0]
+        self.state.bag = self.state.bag[1:]
         self.state.step += 1
 
         if len(self.state.bag) == 0:

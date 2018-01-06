@@ -3,6 +3,7 @@ import time
 
 from fabric import fabric, Job
 import settings
+from utils import make_bag
 
 
 PHASE_LOBBY = 1
@@ -23,7 +24,7 @@ class State(dict):
             phase=PHASE_LOBBY,
             step=0,
             start_ts=time.time(),
-            bag=settings.LETTERS,
+            bag=make_bag(settings.LETTERS),
             table='',
             log=[],
             players=[],
