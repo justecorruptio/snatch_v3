@@ -14,10 +14,11 @@ class Daemon(object):
     def __init__(self):
         self.logger = logging.getLogger('daemon')
         self.running = True
-        signal.signal(signal.SIGTERM, self.sig_handler)
 
-    def sig_handler(self, signum, frame):
-        self.running = False
+        def _sig_handler(signum, frame):
+            self.running = False
+
+        signal.signal(signal.SIGTERM, _sig_handler)
 
     def run_forever(self):
         self.logger.info('Starting Server.')
