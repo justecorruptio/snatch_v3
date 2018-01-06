@@ -20,10 +20,10 @@ def product(arr):
 
 class Anagram(object):
 
-    def __init__(self):
+    def __init__(self, word_list):
         self.data = {}
 
-        fh = open(settings.WORD_LIST, 'r')
+        fh = open(word_list, 'r')
         for line in fh:
             line = line.strip()
             hx = self.hash(line)
@@ -121,7 +121,8 @@ class Anagram(object):
         target_hx = self.hash(target)
         return target in self.data.get(target_hx, [])
 
-anagram = Anagram()
+anagram = Anagram(settings.WORD_LIST)
+easy_anagram = Anagram(settings.EASY_LIST)
 
 
 if __name__ == '__main__':

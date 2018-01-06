@@ -3,7 +3,7 @@ import random
 import sys
 import time
 
-from anagram import anagram
+from anagram import anagram, easy_anagram
 from fabric import fabric, Job
 from service import sync, async
 import settings
@@ -191,8 +191,8 @@ class Game(object):
             return {'error', 'Only one bot per game.'}
 
         handle = [
-            h for h, (l, _, _, _) in settings.BOTS.items()
-            if l == level
+            h for h, l in settings.BOTS.items()
+            if l[0] == level
         ][0]
 
         self.join(handle, nonce='BOT')
@@ -205,14 +205,16 @@ class Game(object):
 
         player_num = self.state.nonces['BOT']
         handle = self.state.players[player_num][0]
-        level, loop_ttl, max_word_len, comb_order = (
+        level, list_id, loop_ttl, max_word_len, comb_order = (
             settings.BOTS[handle]
         )
 
         if self.state.phase in (PHASE_STARTED, PHASE_ENDGAME):
-            target, how = anagram.bot(
+            target, how = [easy_anagram, anagram][list_id].bot(
                 self.state.table,
-                sum([words for _, words in self.state.players], []),
+                sum([
+                    words for _, words in self.state.players
+                ], []),
                 max_word_len,
                 comb_order,
             )
