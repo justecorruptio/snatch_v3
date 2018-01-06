@@ -113,31 +113,54 @@
 
             <div class="snatch-area-inputs snatch-area-inputs-start collapse mt-5">
                 <div class="d-flex flex-row mt-2">
-                    <div id="snatch-display-add-bot" class="btn-group">
-                        <button type="button" class="btn btn-secondary" disabled>
-                            Add a bot at difficulty
-                        </button>
-                        <button type="button" class="btn btn-primary">
-                            1
-                        </button>
-                        <button type="button" class="btn btn-success">
-                            2
-                        </button>
-                        <button type="button" class="btn btn-warning">
-                            3
-                        </button>
-                        <button type="button" class="btn btn-danger">
-                            4
-                        </button>
-                        <button type="button" class="btn btn-dark">
-                            5
-                        </button>
+                    <div class="pt-2 mr-2">
+                        Bot difficulty
+                    </div>
+                    <div id="snatch-display-add-bot" class="btn-group btn-group-toggle"
+                        data-toggle="buttons"
+                    >
+                        <label data-value="0" class="btn btn-secondary">
+                            <input type="radio"> None
+                        </label>
+                        <label data-value="1" class="btn btn-primary">
+                            <input type="radio"> 1
+                        </label>
+                        <label data-value="2" class="btn btn-info">
+                            <input type="radio"> 2
+                        </label>
+                        <label data-value="3" class="btn btn-warning">
+                            <input type="radio"> 3
+                        </label>
+                        <label data-value="4" class="btn btn-danger">
+                            <input type="radio"> 4
+                        </label>
+                        <label data-value="5" class="btn btn-dark">
+                            <input type="radio"> 5
+                        </label>
+                    </div>
+                </div>
+                <div class="d-flex flex-row mt-2">
+                    <div class="pt-2 mr-2">
+                        Minimum word length
+                    </div>
+                    <div id="snatch-display-min-word" class="btn-group btn-group-toggle"
+                        data-toggle="buttons"
+                    >
+                        <label data-value="3" class="btn btn-primary">
+                            <input type="radio"> 3
+                        </label>
+                        <label data-value="4" class="btn btn-info">
+                            <input type="radio"> 4
+                        </label>
+                        <label data-value="5" class="btn btn-warning">
+                            <input type="radio"> 5
+                        </label>
                     </div>
                 </div>
                 <div class="d-flex flex-row mt-2">
                     <div>
                         <button id="snatch-button-start"
-                            class="btn btn-primary"
+                            class="btn btn-success"
                         >Start Game</button>
                     </div>
                 </div>
@@ -156,7 +179,7 @@
                             placeholder="Enter a word"
                             autocomplete="off" autocorrect="off"
                             autocapitalize="off" spellcheck="false"
-                            pattern="[A-Za-z]{4,15}" maxlength="15"
+                            pattern="[A-Za-z]{1,15}" maxlength="15"
                             readonly
                         />
                         <input id="snatch-input-word" type="text"
@@ -164,12 +187,12 @@
                             placeholder="Enter a word"
                             autocomplete="off" autocorrect="off"
                             autocapitalize="off" spellcheck="false"
-                            pattern="[A-Za-z]{4,15}" maxlength="15"
+                            pattern="[A-Za-z]{1,15}" maxlength="15"
                         />
                     </div>
                     <div class="mx-2">
                         <button id="snatch-button-play"
-                            class="btn btn-primary"
+                            class="btn btn-success"
                         >Snatch!</button>
                     </div>
                 </div>

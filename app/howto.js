@@ -18,7 +18,7 @@ var howtoScript = [
         click the green button to add a bot with difficulty 2`
     ],
     [
-        '#snatch-button-start', 'bottom', false, 'click',
+        '#snatch-button-start', 'top', false, 'click',
         'When you\'re ready, click this button to start the game.',
     ],
     [
@@ -27,8 +27,7 @@ var howtoScript = [
     ],
     [
         '.snatch-word-wrapper', 'bottom', 'Continue', '',
-        // TODO: custom letter limit
-        `If you can make a word (min. length 4) with the gray tiles,
+        `If you can make a word (min. length ${game.min_word}) with the gray tiles,
         type it here to claim it.`
     ],
     [

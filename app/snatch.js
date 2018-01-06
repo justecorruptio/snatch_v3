@@ -7,14 +7,11 @@ function message(msg, level, duration) {
     var $el = $('.snatch-message');
     $el.find('.badge').attr('class', 'w-100 badge badge-' + level).text(msg);
     $el.stop(true);
-    //$el.hide();
-    //$el.fadeIn(100).delay(duration).fadeOut();
 
     $el.css({opacity: 0})
         .animate({opacity: 1}, 100)
         .delay(duration)
         .animate({opacity: 0}, 100);
-
 }
 
 function alert(msg) {
@@ -122,15 +119,16 @@ function renderBoard(data) {
 
     $('.snatch-area-inputs').hide();
     game.phase = data.phase;
+    game.min_word = data.options.min_word;
     switch(data.phase) {
         case 1:
             $('.snatch-area-inputs-start').show();
-            if(data.has_bot) {
-                $('#snatch-display-add-bot').hide();
-            }
-            else {
-                $('#snatch-display-add-bot').show();
-            }
+            $(`#snatch-display-add-bot>label`).removeClass('active');
+            $(`#snatch-display-add-bot>label[data-value="${data.options.bot_level}"]`)
+                .addClass('active');
+            $(`#snatch-display-min-word>label`).removeClass('active');
+            $(`#snatch-display-min-word>label[data-value="${data.options.min_word}"]`)
+                .addClass('active');
             break;
         case 2: case 3:
             $('.snatch-area-inputs-play').show();
@@ -210,13 +208,14 @@ function apiCreateGame() {
     });
 }
 
-function apiAddBotGame(level) {
-    return $.ajax(settings.baseUrl + `/${game.name}/addBot`, {
+function apiSetOptions(field, value) {
+    var data = {
+        nonce: game.nonce
+    };
+    data[field] = value;
+    return $.ajax(settings.baseUrl + `/${game.name}/options`, {
         type: 'POST',
-        data: JSON.stringify({
-            nonce: game.nonce,
-            level: level,
-        })
+        data: JSON.stringify(data)
     }).done(function(data) {
         if('error' in data) {
             alert(data.error);
@@ -240,8 +239,8 @@ function apiStartGame() {
 
 function apiPlayGame() {
     var word = $('#snatch-input-word').val();
-    if(word.length < 4) {
-        alert('Minimum word length is 4');
+    if(word.length < game.min_word) {
+        alert('Minimum word length is ' + game.min_word);
         $('.snatch-word').val('')
         return;
     }
@@ -414,10 +413,14 @@ $(function() {
         startHowto();
     });
 
-    $('#snatch-display-add-bot>button').on('click', function() {
-        var $el = $(this),
-            level = $el.text();
-        apiAddBotGame(parseInt(level));
+    $('#snatch-display-add-bot>label').on('click', function(event) {
+        var value = $(this).data('value');
+        apiSetOptions('bot_level', parseInt(value));
+    });
+
+    $('#snatch-display-min-word>label').on('click', function(event) {
+        var value = $(this).data('value');
+        apiSetOptions('min_word', parseInt(value));
     });
 
     $('#snatch-button-start').on('click', function() {

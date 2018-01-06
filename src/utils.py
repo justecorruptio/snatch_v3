@@ -10,6 +10,15 @@ def rand_chars(length):
     )
 
 
+def is_int_in_range(val, low, high):
+    # inclusive, None is ok
+    if val is None:
+        return True
+    if not isinstance(val, int):
+        return False
+    return val >= low and val <= high
+
+
 def near_merge(a, b):
     if not a:
         return b

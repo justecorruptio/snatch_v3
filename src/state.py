@@ -30,6 +30,10 @@ class State(dict):
             players=[],
             nonces={},
             next_name=None,
+            options={
+                'bot_level': 0,
+                'min_word': 3,
+            },
         )
 
     def cleaned(self):

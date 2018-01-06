@@ -78,7 +78,7 @@ class Anagram(object):
 
         return None, error
 
-    def bot(self, table, words, max_word_len, comb_order):
+    def bot(self, table, words, min_word_len, max_word_len, comb_order):
 
         # protect ourselves from segfault
         table = table[-10:]
@@ -93,8 +93,7 @@ class Anagram(object):
                 words_hx = self.hash(combo)
 
                 for j in xrange(
-                    # TODO: bot's min 4 logic is here
-                    [4, 1, 0, 0, 0][i],
+                    [min_word_len, 1, 0, 0, 0][i],
                     max_word_len - len(combo) + 1,
                     1,
                 ):

@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(__file__))
 from fabric import fabric, Job
 from service import sync
 from state import State
+from utils import is_int_in_range
 import settings
 
 
@@ -19,7 +20,7 @@ urls = (
     '/game/([a-zA-Z]{5})/join', 'GameJoin',
     '/game/([a-zA-Z]{5})/start', 'GameStart',
     '/game/([a-zA-Z]{5})/play', 'GamePlay',
-    '/game/([a-zA-Z]{5})/addBot', 'GameAddBot',
+    '/game/([a-zA-Z]{5})/options', 'GameOptions',
 )
 
 web.config.debug = False
@@ -91,19 +92,27 @@ class GamePlay(object):
         return sync.play(name, [nonce, word], as_json=True)
 
 
-class GameAddBot(object):
+class GameOptions(object):
     def POST(self, name):
         data = json.loads(web.data() or '{}')
+
         nonce = data.get('nonce', None)
         if not nonce:
             return '{"error":"nonce missing"}'
 
-        level = data.get('level', None)
-        if not level:
-            return '{"error":"level missing"}'
+        bot_level = data.get('bot_level', None)
+        if not is_int_in_range(bot_level, 0, 5):
+            return '{"error","Invalid bot level"}'
 
-        # TODO: make this a start() option
-        return sync.add_bot(name, [nonce, level], as_json=True)
+        min_word = data.get('min_word', None)
+        if not is_int_in_range(min_word, 3, 5):
+            return '{"error","Invalid min word"}'
+
+        return sync.set_options(name, [
+            nonce,
+            bot_level,
+            min_word,
+        ], as_json=True)
 
 
 class SnatchMiddleware(object):

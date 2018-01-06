@@ -66,11 +66,28 @@ class Game(object):
             nonce = '%s_%03d' % (rand_chars(7), next_player_num)
         self.state.players.append((handle, []))
         self.state.nonces[nonce] = next_player_num
-        self.state.step += 1
 
+        self.state.step += 1
         self.log('join', handle)
 
         return {'nonce': nonce}
+
+    def leave(self, nonce):
+        player_num = self.state.nonces.get(nonce, None)
+        if player_num is None:
+            return {'error': 'invalid player'}
+
+        handle = self.state.players[player_num][0]
+        del self.state.players[player_num]
+        for key, val in self.state.nonces.items():
+            if val > player_num:
+                self.state.nonces[key] -= 1
+        del self.state.nonces[nonce]
+
+        self.state.step += 1
+        self.log('leave', handle)
+
+        return {}
 
     def start(self, nonce):
 
@@ -127,9 +144,9 @@ class Game(object):
         if player_num is None:
             return {'error': 'Invalid player'}
 
-        if len(target) < settings.MIN_WORD_LENGTH:
+        if len(target) < self.state.options['min_word']:
             return {'error': 'Minimum word length is %s' % (
-                settings.MIN_WORD_LENGTH,
+                self.state.options['min_word'],
             )}
 
         if not anagram.is_word(target):
@@ -171,28 +188,47 @@ class Game(object):
 
         return {}
 
-    def add_bot(self, nonce, level):
+    def set_options(self, nonce, bot_level=None, min_word=None):
+
+        if self.state.phase != PHASE_LOBBY:
+            return {'error': 'invalid state'}
+
         player_num = self.state.nonces.get(nonce, None)
         if player_num is None:
-            return {'error': 'Invalid player'}
+            return {'error': 'invalid player'}
 
-        try:
-            level = int(level)
-            if level > 5 or level < 1:
-                raise Exception()
-            level -= 1
-        except Exception:
-            return {'error', 'Invalid level'}
+        if bot_level is not None:
+            self.state.options['bot_level'] = bot_level
+            if bot_level > 0:
+                return self.add_bot(bot_level)
+            else:
+                return self.remove_bot()
 
-        if 'BOT' in self.state.nonces:
-            return {'error', 'Only one bot per game.'}
+        if min_word is not None:
+            self.state.options['min_word'] = min_word
+            self.state.step += 1
+
+        return {}
+
+    def add_bot(self, level):
+
+        # TODO: maybe allow more than one?
+        self.remove_bot()
 
         handle = [
             h for h, l in settings.BOTS.items()
-            if l[0] == level
+            if l[0] == level - 1
         ][0]
 
         self.join(handle, nonce='BOT')
+
+        return {}
+
+    def remove_bot(self):
+        if 'BOT' not in self.state.nonces:
+            return {}
+
+        self.leave('BOT')
 
         return {}
 
@@ -212,6 +248,7 @@ class Game(object):
                 sum([
                     words for _, words in self.state.players
                 ], []),
+                self.state.options['min_word'],
                 max_word_len,
                 comb_order,
             )
