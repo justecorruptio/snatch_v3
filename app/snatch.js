@@ -3,7 +3,7 @@ var countdownInterval = 0;
 var lastLogStep = -1;
 var pollXhr;
 
-function message(msg, level, duration) {
+function showMessage(msg, level, duration) {
     var $el = $('.snatch-message');
     $el.find('.badge').attr('class', 'w-100 badge badge-' + level).text(msg);
     $el.stop(true);
@@ -14,12 +14,18 @@ function message(msg, level, duration) {
         .animate({opacity: 0}, 100);
 }
 
+function hideMessage() {
+    var $el = $('.snatch-message');
+    $el.stop(true);
+    $el.css({opacity: 0});
+}
+
 function alert(msg) {
-    message(msg, 'danger', 5000);
+    showMessage(msg, 'danger', 5000);
 }
 
 function log(msg) {
-    message(msg, 'info', 10000);
+    showMessage(msg, 'info', 10000);
 }
 
 function doCountdown(timeLeft, prev) {
@@ -80,8 +86,10 @@ function reset() {
     delete game.phase;
     delete game.min_word;
     lastLogStep = 0;
+    hideMessage();
     clearTimeout(countdownInterval);
     $('#snatch-input-name').val('');
+    $('.snatch-word').val('');
     $('#snatch-display-table').html('');
     $('#snatch-display-players').html('');
     pollXhr.abort();
