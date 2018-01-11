@@ -48,6 +48,11 @@ function doCountdown(timeLeft, prev) {
     $('#snatch-display-status').text(status_msg);
 }
 
+function updateSnatchWord(word) {
+    $('.snatch-word').val(word);
+    $('#snatch-overlay-word').text(word);
+}
+
 function cleanInput() {
     var $el = $(this),
         val = $el.val();
@@ -88,8 +93,8 @@ function reset() {
     lastLogStep = 0;
     hideMessage();
     clearTimeout(countdownInterval);
+    updateSnatchWord('');
     $('#snatch-input-name').val('');
-    $('.snatch-word').val('');
     $('#snatch-display-table').html('');
     $('#snatch-display-players').html('');
     pollXhr.abort();
@@ -253,7 +258,7 @@ function apiPlayGame() {
     var word = $('#snatch-input-word').val();
     if(word.length < game.min_word) {
         alert('Minimum word length is ' + game.min_word);
-        $('.snatch-word').val('')
+        updateSnatchWord('');
         return;
     }
     return $.ajax(settings.baseUrl + `/${game.name}/play`, {
@@ -263,7 +268,7 @@ function apiPlayGame() {
             word: word
         })
     }).done(function(data) {
-        $('.snatch-word').val('');
+        updateSnatchWord('');
         if('error' in data) {
             alert(data.error);
             return Promise.reject();
@@ -353,7 +358,6 @@ $(function() {
         var i = event.which,
             c = '',
             $el = $(this),
-            $both = $('.snatch-word'),
             val = $el.val();
         if (i >= 97 && i <= 122){
             c = String.fromCharCode(i - 32);
@@ -363,10 +367,10 @@ $(function() {
         }
 
         if (c != '' && val.length < 15) {
-            $both.val(val + c);
+            updateSnatchWord(val + c);
         }
         else if (i == 8 && val != '') {
-            $both.val(val.substr(0, val.length - 1));
+            updateSnatchWord(val.substr(0, val.length - 1));
         }
         else if (i == 13) {
             apiPlayGame();
@@ -466,31 +470,28 @@ $(function() {
         }
     }
 
-    $('#snatch-keyboard').on('touchstart', function(event) {
-        var idx = eventKeyboardIndex(event.originalEvent.touches[0]);
-        $('.snatch-key-' + idx).addClass('snatch-key-active');
-    });
-
-    $('#snatch-keyboard').on('touchmove', function(event) {
-        var idx = eventKeyboardIndex(event.originalEvent.changedTouches[0]);
+    $('#snatch-keyboard').on('touchstart touchmove touchend', function(event) {
+        var touches = event.originalEvent.touches,
+            idx;
         $('.snatch-key-active').removeClass('snatch-key-active');
-        $('.snatch-key-' + idx).addClass('snatch-key-active');
+        for(var i = 0; i < touches.length; i++){
+            idx = eventKeyboardIndex(touches[i]);
+            $('.snatch-key-' + idx).addClass('snatch-key-active');
+        }
     });
 
     $('#snatch-keyboard').on('touchend', function(event) {
         var idx = eventKeyboardIndex(event.originalEvent.changedTouches[0]),
-            $word = $('.snatch-word'),
-            word = $word.val(),
+            word = $('.snatch-word').val(),
             c = key_layout[idx];
 
-        $('.snatch-key-active').removeClass('snatch-key-active');
         if(c == '<') {
             if(word.length > 0) {
-                $word.val(word.substr(0, word.length - 1));
+                updateSnatchWord(word.substr(0, word.length - 1));
             }
         }
-        else if(c && c != ' '){
-            $word.val(word + c);
+        else if(c && c != ' ' && word.length < 15){
+            updateSnatchWord(word + c);
         }
     });
 

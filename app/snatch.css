@@ -172,6 +172,53 @@ input:read-only {
     }
 }
 
+.snatch-word {
+    color: transparent;
+}
+
+.snatch-word-wrapper {
+    position: relative;
+}
+
+#snatch-mirror-word {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+#snatch-overlay-word {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    margin: .375rem 1px .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border: 1px solid transparent;
+}
+
+#snatch-overlay-word::after {
+    content: " ";
+    position: absolute;
+    top: 2px;
+    height: 1.35rem;
+    right: -2px;
+    white-space: pre;
+    border-right: 2px solid transparent;
+    animation: cursor 1s ease-in-out infinite;
+}
+
+@keyframes cursor {
+    0% {
+        border-right-color: transparent;
+    }
+    30% {
+        border-right-color: #6af;
+    }
+    100% {
+        border-right-color: transparent;
+    }
+}
+
 .snatch-key-spacer {
     width: calc(5vw - .4rem);
 }

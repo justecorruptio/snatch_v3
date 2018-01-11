@@ -7,10 +7,10 @@ backend:
     tidy up state machine
     stats API
     graceful leave game
+    balance bots
 
 frontend:
     debounce
     spinner for high latency on mobile.
-    bug: make it so you can paste to game name input
     copyright
     splash
