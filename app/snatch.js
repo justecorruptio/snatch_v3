@@ -421,8 +421,9 @@ $(function() {
         apiJoinGame();
     });
 
-    $('#snatch-button-howto').on('click', function() {
-        startHowto();
+    $('.snatch-button-howto').on('click', function() {
+        howtoStep = $(this).data('step');
+        displayHelp(...howtoScript[howtoStep]);
     });
 
     $('#snatch-display-add-bot>label').on('click', function(event) {

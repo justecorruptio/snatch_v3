@@ -23,7 +23,7 @@ var howtoScript = [
     ],
     [
         '#snatch-display-players', 'bottom', 'Continue', '',
-        'Gray letter tiles will start appearing in a few seconds.',
+        'Gray letter tiles will start appearing here.'
     ],
     [
         '.snatch-word-wrapper', 'bottom', 'Continue', '',
@@ -89,7 +89,9 @@ function displayHelp(el_id, placement, button, trigger, message) {
     }
     $el.popover({
         container: 'body',
-        title: 'Tutorial<small class="text-muted float-right popover-close">End Tutorial</small>',
+        title: `Tutorial<small class="text-muted float-right popover-close">
+            Dismiss Tutorial
+        </small>`,
         content: message,
         placement: placement,
         html: true,
@@ -105,26 +107,21 @@ function displayHelp(el_id, placement, button, trigger, message) {
     })
     $el.popover('show');
     var $dismiss_button = $('.popover-dismiss');
-    var dismiss_func = function () {
+    var dismiss_func = function (stop) {
         $el.popover('dispose');
         $el.off(trigger, dismiss_func);
         $dismiss_button.off('click', dismiss_func);
-        howtoStep ++;
-        if(howtoScript[howtoStep]) {
-            displayHelp(...howtoScript[howtoStep]);
+        if(stop !== true) {
+            howtoStep ++;
+            if(howtoScript[howtoStep]) {
+                displayHelp(...howtoScript[howtoStep]);
+            }
         }
     };
     $el.one(trigger, dismiss_func);
     $dismiss_button.one('click', dismiss_func);
 
     $('.popover-close').one('click', function () {
-        $el.popover('dispose');
-        $el.off(trigger, dismiss_func);
-        $dismiss_button.off('click', dismiss_func);
+        dismiss_func(true);
     });
-}
-
-function startHowto() {
-    howtoStep = 0;
-    displayHelp(...howtoScript[howtoStep]);
 }
