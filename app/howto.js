@@ -28,11 +28,9 @@ var howtoScript = [
     [
         '.snatch-word-wrapper', 'bottom', 'Continue', '',
         ()=>`If you can make a word (minimum length ${game.min_word}) with the gray tiles,
-        type it here to claim it.`
-    ],
-    [
-        '.snatch-word-wrapper', 'bottom', 'Continue', '',
-        `For example, if you see:
+        type it here to claim it.
+        <br><br>
+        For example, if you see:
             <span class="badge badge-secondary">T</span>
             <span class="badge badge-secondary">P</span>
             <span class="badge badge-secondary">R</span>
@@ -42,15 +40,26 @@ var howtoScript = [
     [
         '.snatch-word-wrapper', 'bottom', 'Continue', '',
         `Furthermore, you can steal words by adding one or
-        more gray letters to an existing word.`
-    ],
-    [
-        '.snatch-word-wrapper', 'bottom', 'Continue', '',
-        `For example, if you or another player has
+        more gray letters to an existing word.
+        <br><br>
+        For example, if you or another player has
             <span class="badge badge-primary">HEAT</span>
         and a gray letter
             <span class="badge badge-secondary">C</span>
         appears, you can type in the word "TEACH".`
+    ],
+    [
+        '.snatch-word-wrapper', 'bottom', 'Continue', '',
+        `Lastly, you my combine two or more words to make
+        a longer word!
+        <br><br>
+        For example, you may combine
+            <span class="badge badge-primary">PET</span>
+        and
+            <span class="badge badge-primary">DRIP</span>
+        to make
+            <span class="badge badge-primary">TRIPPED</span>
+        .`
     ],
     [
         '#snatch-display-players', 'bottom', 'Continue', '',
@@ -68,8 +77,30 @@ var howtoScript = [
 ];
 
 var howtoStep = 0;
+var $openedPopover = false;
+
+function dismissFunc(stop) {
+    if(!$openedPopover) {
+        return;
+    }
+    var $dismiss_button = $('.popover-dismiss');
+    $dismiss_button.off('click', dismissFunc);
+    $openedPopover.off($openedPopover.data('popoverTrigger'), dismissFunc);
+    $openedPopover.popover('dispose');
+    $openedPopover = false;
+    if(stop !== true) {
+        howtoStep ++;
+        if(howtoScript[howtoStep]) {
+            displayHelp(...howtoScript[howtoStep]);
+        }
+    }
+}
 
 function displayHelp(el_id, placement, button, trigger, message) {
+    if($openedPopover) {
+        dismissFunc(true);
+    }
+
     var $el = $(el_id);
 
     if(!$el.is(':visible') || $el.height() < 1 ) {
@@ -105,23 +136,16 @@ function displayHelp(el_id, placement, button, trigger, message) {
             </div>
         `
     })
-    $el.popover('show');
-    var $dismiss_button = $('.popover-dismiss');
-    var dismiss_func = function (stop) {
-        $el.popover('dispose');
-        $el.off(trigger, dismiss_func);
-        $dismiss_button.off('click', dismiss_func);
-        if(stop !== true) {
-            howtoStep ++;
-            if(howtoScript[howtoStep]) {
-                displayHelp(...howtoScript[howtoStep]);
-            }
-        }
-    };
-    $el.one(trigger, dismiss_func);
-    $dismiss_button.one('click', dismiss_func);
 
-    $('.popover-close').one('click', function () {
-        dismiss_func(true);
-    });
+    $el.popover('show');
+    $el.data('popoverTrigger', trigger);
+    $openedPopover = $el;
+
+    var $dismiss_button = $('.popover-dismiss');
+    $dismiss_button.one('click', dismissFunc);
+    $el.one(trigger, dismissFunc);
+
+    $('.popover-close').click(function () {
+        dismissFunc(true);
+    })
 }

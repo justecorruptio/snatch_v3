@@ -198,19 +198,22 @@
                         <div class="badge badge-danger w-100">#</div>
                     </h4>
                 </div>
-                <div class="d-flex flex-row mb-2">
-                    <div class="ml-1 snatch-word-wrapper d-none d-sm-inline">
+                <div class="d-flex flex-row mb-2 snatch-word-row">
+                    <div class="mx-2 d-inline d-sm-none">
+                        <button data-step="5"
+                            class="btn btn-outline-secondary snatch-button-howto"
+                        >?</button>
+                    </div>
+                    <div class="ml-1 snatch-word-wrapper position-relative">
                         <input id="snatch-input-word" type="text"
-                            class="form-control snatch-word"
+                            class="form-control snatch-word d-none d-sm-inline"
                             placeholder="Enter a word"
                             autocomplete="off" autocorrect="off"
                             autocapitalize="off" spellcheck="false"
                             pattern="[A-Za-z]{1,15}" maxlength="15"
                         />
-                    </div>
-                    <div class="ml-1 snatch-word-wrapper position-relative w-100 d-inline d-sm-none">
                         <input id="snatch-mirror-word" type="text"
-                            class="form-control snatch-word"
+                            class="form-control snatch-word d-inline d-sm-none"
                             placeholder="Enter a word"
                             autocomplete="off" autocorrect="off"
                             autocapitalize="off" spellcheck="false"
