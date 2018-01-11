@@ -15,7 +15,7 @@ var howtoScript = [
     [
         '#snatch-display-add-bot', 'bottom', false, 'click',
         `Optionally you can add a bot to play with. For the tutorial, let's
-        click the green button to add a bot with difficulty 2`
+        click the green button to add a bot with difficulty 2.`
     ],
     [
         '#snatch-button-start', 'top', false, 'click',
