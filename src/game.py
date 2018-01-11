@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 import sys
 import time
@@ -35,6 +36,8 @@ class GameError(Exception):
 
 
 class Game(object):
+
+    logger = logging.getLogger('daemon')
 
     def __init__(self, name=None):
         self.name = name
@@ -175,7 +178,7 @@ class Game(object):
                     status = ('steal', target, player_num, w, i)
                     break
             # table and player words are mutually exclusive.
-            if w in self.state.table:
+            if len(w) == 1 and w in self.state.table:
                 table = list(self.state.table)
                 table.remove(w)
                 self.state.table = ''.join(table)
@@ -300,7 +303,8 @@ class Game(object):
                 result = {'error': str(e)}
             except Exception, e:
                 import traceback
-                sys.stderr.write(traceback.format_exc() + '\n')
+                self.logger.error('DATA: ' + str(job.data))
+                self.logger.error(traceback.format_exc())
                 result = {'error': str(e)}
 
             if result is not None:
