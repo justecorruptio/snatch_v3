@@ -67,6 +67,7 @@ input:read-only {
 
 #snatch-input-link {
     min-width: 14rem;
+    letter-spacing: -0.05rem;
 }
 
 #snatch-button-link-copy img {
