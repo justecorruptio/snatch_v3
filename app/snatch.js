@@ -101,8 +101,19 @@ function reset() {
     showPage(0);
 }
 
+function getLink() {
+    var path = window.location.pathname;
+    if(path == '/') {
+        path = '';
+    }
+    return window.location.protocol + '//' + window.location.hostname +
+        path + '#' + game.name;
+}
+
 function renderBoard(data) {
     $('#snatch-display-name').text(game.name);
+    $('#snatch-input-link').val(getLink());
+    $('#snatch-button-link-copy').attr('data-clipboard-text', getLink());
     var $table = $('#snatch-display-table');
     var i, j;
 
@@ -334,6 +345,14 @@ function apiPollGame(step, halt) {
 
 $(function() {
 
+    var hash;
+    if(hash = window.location.hash) {
+        history.replaceState({}, document.title, ".");
+        if(/^#[A-Z]{5}$/.test(hash)) {
+            $('#snatch-input-name').val(hash.substr(1));
+        }
+    }
+
     $('body').on('touchmove', function(event) {
         event.preventDefault();
         event.stopPropagation();
@@ -523,6 +542,25 @@ $(function() {
         delete game.step;
         apiPollGame();
      }
+
+    $('#snatch-button-link-copy').tooltip({
+        trigger: 'click',
+        placement: 'bottom',
+        title: 'Copied!'
+    });
+
+    var clipboard = new Clipboard('#snatch-button-link-copy');
+    clipboard.on('success', function () {
+        var $el = $('#snatch-button-link-copy');
+        $el.tooltip('show');
+        console.log($el);
+        setTimeout(function () {
+            console.log($el);
+            $el.tooltip('hide');
+        }, 2000);
+    });
+
+
 
     /*
     // XXX:testing
