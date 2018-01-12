@@ -1,7 +1,21 @@
 var game = window.localStorage;
 var countdownInterval = 0;
 var lastLogStep = -1;
-var pollXhr;
+var pollXhr = false;
+var debounceFlag = false;
+
+function debounce() {
+    if(debounceFlag) {
+        return true;
+    }
+
+    debounceFlag = true;
+    setTimeout(function () {
+        debounceFlag = false;
+    }, 200);
+
+    return false;
+}
 
 function showMessage(msg, level, duration) {
     var $el = $('.snatch-message');
@@ -97,7 +111,8 @@ function reset() {
     $('#snatch-input-name').val('');
     $('#snatch-display-table').html('');
     $('#snatch-display-players').html('');
-    pollXhr.abort();
+    if(pollXhr)
+        pollXhr.abort();
     showPage(0);
 }
 
@@ -221,6 +236,8 @@ function renderBoard(data) {
 }
 
 function apiCreateGame() {
+    if(debounce()) return;
+
     var post_data;
     if(game.name) {
         post_data = JSON.stringify({link: game.name});
@@ -237,6 +254,8 @@ function apiCreateGame() {
 }
 
 function apiSetOptions(field, value) {
+    if(debounce()) return;
+
     var data = {
         nonce: game.nonce
     };
@@ -252,6 +271,8 @@ function apiSetOptions(field, value) {
 }
 
 function apiStartGame() {
+    if(debounce()) return;
+
     return $.ajax(settings.baseUrl + `/${game.name}/start`, {
         type: 'POST',
         data: JSON.stringify({
@@ -266,6 +287,8 @@ function apiStartGame() {
 }
 
 function apiPlayGame() {
+    if(debounce()) return;
+
     var word = $('#snatch-input-word').val();
     if(word.length < game.min_word) {
         alert('Minimum word length is ' + game.min_word);
@@ -288,6 +311,8 @@ function apiPlayGame() {
 }
 
 function apiJoinGame() {
+    if(debounce()) return;
+
     var game_name = game.name;
     if(game.phase == 4 && game.next_name) {
         game_name = game.next_name;
@@ -349,7 +374,11 @@ $(function() {
     if(hash = window.location.hash) {
         history.replaceState({}, document.title, ".");
         if(/^#[A-Z]{5}$/.test(hash)) {
+            if(hash != game.name) {
+                reset();
+            }
             $('#snatch-input-name').val(hash.substr(1));
+            log('You\'ve been invited to join a game!');
         }
     }
 

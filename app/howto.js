@@ -13,8 +13,12 @@ var howtoScript = [
         'This is the Game ID. Other players can join your game using this code.',
     ],
     [
+        '#snatch-input-link', 'bottom', 'Continue', '',
+        'You can also invite your friends to join this game by using this link.'
+    ],
+    [
         '#snatch-display-add-bot', 'bottom', false, 'click',
-        `Optionally you can add a bot to play with. For the tutorial, let's
+        `Optionally, you can add a bot to play with. For the tutorial, let's
         click the green button to add a bot with difficulty 2.`
     ],
     [
