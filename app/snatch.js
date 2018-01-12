@@ -236,8 +236,6 @@ function renderBoard(data) {
 }
 
 function apiCreateGame() {
-    if(debounce()) return;
-
     var post_data;
     if(game.name) {
         post_data = JSON.stringify({link: game.name});
@@ -271,8 +269,6 @@ function apiSetOptions(field, value) {
 }
 
 function apiStartGame() {
-    if(debounce()) return;
-
     return $.ajax(settings.baseUrl + `/${game.name}/start`, {
         type: 'POST',
         data: JSON.stringify({
@@ -311,8 +307,6 @@ function apiPlayGame() {
 }
 
 function apiJoinGame() {
-    if(debounce()) return;
-
     var game_name = game.name;
     if(game.phase == 4 && game.next_name) {
         game_name = game.next_name;
