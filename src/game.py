@@ -303,19 +303,20 @@ class Game(object):
                 result = {'error': str(e)}
             except Exception, e:
                 import traceback
-                self.logger.error('DATA: ' + str(job.data))
-                self.logger.error(traceback.format_exc())
+                cls.logger.error('DATA: ' + str(job.data))
+                cls.logger.error(traceback.format_exc())
                 result = {'error': str(e)}
 
             if result is not None:
                 job.write_result(result)
 
-            game.state.store(game.name)
-            if start_step != end_step:
-                fabric.notify(
-                    'channel:' + game.name,
-                    json.dumps(game.state.cleaned()),
-                )
+            if 'error' not in result:
+                game.state.store(game.name)
+                if start_step != end_step:
+                    fabric.notify(
+                        'channel:' + game.name,
+                        json.dumps(game.state.cleaned()),
+                    )
 
         finally:
             if has_lock:
