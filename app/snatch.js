@@ -6,17 +6,17 @@ var pollXhr;
 function showMessage(msg, level, duration) {
     var $el = $('.snatch-message');
     $el.find('.badge').attr('class', 'w-100 badge badge-' + level).text(msg);
-    $el.stop(true);
+    $el.stop(true, true);
 
     $el.css({opacity: 0})
         .animate({opacity: 1}, 100)
-        .delay(duration)
+        .animate({opacity: 1}, duration)
         .animate({opacity: 0}, 100);
 }
 
 function hideMessage() {
     var $el = $('.snatch-message');
-    $el.stop(true);
+    $el.stop(true, true);
     $el.css({opacity: 0});
 }
 
