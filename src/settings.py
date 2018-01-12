@@ -42,11 +42,11 @@ DEBUG = True
 
 BOTS = {
     # name: (level, list_id, loop_ttl, max_word_len, comb_order)
-    'EasyBot': (0, 0, 47, 5, [0]),
-    'OkayBot': (1, 0, 37, 6, [0, 1]),
-    'HardBot': (2, 1, 27, 8, [1, 0]),
-    'InsaneBot': (3, 1, 16, 10, [1, 0, 2]),
-    'DeathBot': (4, 1, 3.3, 15, [1, 0, 2, 3]),
+    'EasyBot': (0, 0, 31, 4, [0]),
+    'OkayBot': (1, 0, 23, 6, [1, 0]),
+    'HardBot': (2, 0, 19, 8, [1, 0]),
+    'InsaneBot': (3, 1, 19, 8, [1, 0, 2]),
+    'DeathBot': (4, 1, 15, 15, [1, 0, 2, 3]),
 }
 
 dictConfig({

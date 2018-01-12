@@ -110,6 +110,10 @@ input:read-only {
     font-size: 125%;
 }
 
+#snatch-display-table {
+    min-height: 3.5rem;
+}
+
 @media (min-width: 576px) {
     .snatch-tile {
         height: 1.75rem;

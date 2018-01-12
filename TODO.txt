@@ -14,3 +14,4 @@ frontend:
     spinner for high latency on mobile.
     copyright
     splash
+    table should have a min height

@@ -93,9 +93,9 @@ class Anagram(object):
                 words_hx = self.hash(combo)
 
                 for j in xrange(
-                    [min_word_len, 1, 0, 0, 0][i],
-                    max_word_len - len(combo) + 1,
-                    1,
+                    max_word_len - len(combo),
+                    [min_word_len, 1, 0, 0, 0][i] - 1,
+                    -1,
                 ):
                     if letter_hashes[j] is None:
                         letter_hashes[j] = [

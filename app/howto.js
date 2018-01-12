@@ -26,7 +26,7 @@ var howtoScript = [
         'When you\'re ready, click this button to start the game.',
     ],
     [
-        '#snatch-display-players', 'bottom', 'Continue', '',
+        '#snatch-display-table', 'bottom', 'Continue', '',
         'Gray letter tiles will start appearing here.'
     ],
     [

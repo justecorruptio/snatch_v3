@@ -253,6 +253,7 @@ class Game(object):
         level, list_id, loop_ttl, max_word_len, comb_order = (
             settings.BOTS[handle]
         )
+        min_word_len = self.state.options['min_word']
 
         if self.state.phase in (PHASE_STARTED, PHASE_ENDGAME):
             target, how = [easy_anagram, anagram][list_id].bot(
@@ -260,8 +261,8 @@ class Game(object):
                 sum([
                     words for _, words in self.state.players
                 ], []),
-                self.state.options['min_word'],
-                max_word_len,
+                min_word_len,
+                max(min_word_len, max_word_len),
                 comb_order,
             )
 
