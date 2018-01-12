@@ -299,6 +299,7 @@ class Game(object):
                 start_step = game.state.step
                 result = getattr(game, action)(*args)
                 end_step = game.state.step
+                game.state.store(game.name)
             except GameError, e:
                 result = {'error': str(e)}
             except Exception, e:
@@ -310,13 +311,11 @@ class Game(object):
             if result is not None:
                 job.write_result(result)
 
-                if 'error' not in result:
-                    game.state.store(game.name)
-                    if start_step != end_step:
-                        fabric.notify(
-                            'channel:' + game.name,
-                            json.dumps(game.state.cleaned()),
-                        )
+            if start_step != end_step:
+                fabric.notify(
+                    'channel:' + game.name,
+                    json.dumps(game.state.cleaned()),
+                )
 
         finally:
             if has_lock:
