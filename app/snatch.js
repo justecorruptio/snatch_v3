@@ -25,7 +25,7 @@ function alert(msg) {
 }
 
 function log(msg) {
-    showMessage(msg, 'info', 10000);
+    showMessage(msg, 'info', 20000);
 }
 
 function doCountdown(timeLeft, prev) {
