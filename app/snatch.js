@@ -333,6 +333,7 @@ function apiPollGame(step, halt) {
 }
 
 $(function() {
+
     $('body').on('touchmove', function(event) {
         event.preventDefault();
         event.stopPropagation();
@@ -348,7 +349,6 @@ $(function() {
         e.preventDefault();
         $(this).trigger('click').trigger('click');
     });
-
 
     $('#snatch-input-handle').on('change', cleanInput);
     $('#snatch-input-word').on('change', cleanInput);
@@ -450,6 +450,10 @@ $(function() {
     });
 
     $('#snatch-button-play').on('click', function() {
+        apiPlayGame();
+    });
+
+    $('#snatch-button-play-mobile').on('touchend', function() {
         apiPlayGame();
     });
 
