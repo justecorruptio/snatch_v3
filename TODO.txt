@@ -7,11 +7,9 @@ backend:
     tidy up state machine
     stats API
     graceful leave game
-    balance bots
 
 frontend:
     debounce
     spinner for high latency on mobile.
     copyright
     splash
-    table should have a min height

@@ -368,10 +368,11 @@ $(function() {
     if(hash = window.location.hash) {
         history.replaceState({}, document.title, ".");
         if(/^#[A-Z]{5}$/.test(hash)) {
+            hash = hash.substr(1);
             if(hash != game.name) {
                 reset();
             }
-            $('#snatch-input-name').val(hash.substr(1));
+            $('#snatch-input-name').val(hash);
             log('You\'ve been invited to join a game!');
         }
     }
