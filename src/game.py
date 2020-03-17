@@ -100,10 +100,8 @@ class Game(object):
 
         self.state.phase = PHASE_STARTED
         self.state.start_ts = time.time()
-        letters = [
-            settings.QUICK_LETTERS,
-            settings.LETTERS,
-        ][self.state.options['game_length'] - 1]
+        game_length = self.state.options['game_length']
+        letters = settings.GAME_LENGTHS[game_length][0]
         self.state.bag = make_bag(letters)
         self.state.step += 1
 
@@ -128,13 +126,17 @@ class Game(object):
             # calling this now is guaranteed to not actually end
             self.end()
         else:
-            async.peel(self.name, delay=settings.PEEL_DELAY)
+            game_length = self.state.options['game_length']
+            peel_delay = settings.GAME_LENGTHS[game_length][1]
+            async.peel(self.name, delay=peel_delay)
 
         return None
 
     def end(self):
         delayed_time = time.time() - self.state.start_ts
-        if delayed_time < settings.ENDGAME_TIME:
+        game_length = self.state.options['game_length']
+        endgame_time = settings.GAME_LENGTHS[game_length][2]
+        if delayed_time < endgame_time:
             # fix a tiny race condition, repeatedly try to end
             # the game until it is.
             async.end(self.name, delay=1)

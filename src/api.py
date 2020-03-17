@@ -105,11 +105,11 @@ class GameOptions(object):
             return '{"error","Invalid bot level"}'
 
         min_word = data.get('min_word', None)
-        if not is_int_in_range(min_word, 3, 5):
+        if not is_int_in_range(min_word, 3, 7):
             return '{"error","Invalid min word"}'
 
         game_length = data.get('game_length', None)
-        if not is_int_in_range(game_length, 1, 2):
+        if not is_int_in_range(game_length, 1, 3):
             return '{"error","Invalid game length"}'
 
         return sync.set_options(name, [

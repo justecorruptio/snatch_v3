@@ -128,6 +128,7 @@ function getLink() {
 function renderBoard(data) {
     $('#snatch-display-name').text(game.name);
     $('#snatch-input-link').val(getLink());
+    history.replaceState(null, null, '#' + game.name);
     $('#snatch-button-link-copy').attr('data-clipboard-text', getLink());
     var $table = $('#snatch-display-table');
     var i, j;

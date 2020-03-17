@@ -45,9 +45,10 @@ class State(dict):
         if 'bag' in ret:
             ret['bag'] = len(ret['bag'])
         if 'start_ts' in ret:
+            game_length = self.options['game_length']
+            endgame_time = settings.GAME_LENGTHS[game_length][2]
             ret['time_left'] = (
-                settings.ENDGAME_TIME -
-                (time.time() - ret['start_ts'])
+                endgame_time - (time.time() - ret['start_ts'])
             )
         return ret
 
