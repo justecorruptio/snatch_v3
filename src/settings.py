@@ -54,6 +54,9 @@ dictConfig({
         'default': {
             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
         },
+        'game': {
+            'format': '%(asctime)s\t%(message)s'
+        }
     },
     'handlers': {
         'daemon': {
@@ -74,6 +77,12 @@ dictConfig({
             'interval': 1,
             'backupCount': 1000,
         },
+        'game': {
+            'level': 'INFO',
+            'class': 'logging.handlers.WatchedFileHandler',
+            'formatter': 'game',
+            'filename': '/var/log/snatch/game.log',
+        },
     },
     'loggers': {
         'daemon': {
@@ -84,6 +93,11 @@ dictConfig({
         'api': {
             'handlers': ['api'],
             'level': 'DEBUG',
+            'propagate': False,
+        },
+        'game': {
+            'handlers': ['game'],
+            'level': 'INFO',
             'propagate': False,
         },
     }

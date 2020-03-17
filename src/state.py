@@ -66,3 +66,6 @@ class State(dict):
             return False
         self.update(**json.loads(serialized))
         return True
+
+    def __str__(self):
+        return json.dumps(self)

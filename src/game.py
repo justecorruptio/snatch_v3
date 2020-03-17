@@ -38,6 +38,7 @@ class GameError(Exception):
 class Game(object):
 
     logger = logging.getLogger('daemon')
+    game_logger = logging.getLogger('game')
 
     def __init__(self, name=None):
         self.name = name
@@ -146,6 +147,8 @@ class Game(object):
         self.state.start_ts = time.time()
         self.state.step += 1
         self.log('end')
+
+        self.game_logger.info(str(self.state))
 
         return None
 
