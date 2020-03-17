@@ -173,6 +173,9 @@ function renderBoard(data) {
             $(`#snatch-display-game-length>label`).removeClass('active');
             $(`#snatch-display-game-length>label[data-value="${data.options.game_length}"]`)
                 .addClass('active');
+            $(`#snatch-display-ruleset>label`).removeClass('active');
+            $(`#snatch-display-ruleset>label[data-value="${data.options.ruleset}"]`)
+                .addClass('active');
             break;
         case 2: case 3:
             $('.snatch-area-inputs-play').show();
@@ -487,6 +490,11 @@ $(function() {
     $('#snatch-display-game-length>label').on('click', function(event) {
         var value = $(this).data('value');
         apiSetOptions('game_length', parseInt(value));
+    });
+
+    $('#snatch-display-ruleset>label').on('click', function(event) {
+        var value = $(this).data('value');
+        apiSetOptions('ruleset', parseInt(value));
     });
 
     $('#snatch-button-start').on('click', function() {

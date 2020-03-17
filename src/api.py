@@ -112,11 +112,16 @@ class GameOptions(object):
         if not is_int_in_range(game_length, 1, 3):
             return '{"error","Invalid game length"}'
 
+        ruleset = data.get('ruleset', None)
+        if not is_int_in_range(game_length, 1, 2):
+            return '{"error","Invalid rule set"}'
+
         return sync.set_options(name, [
             nonce,
             bot_level,
             min_word,
             game_length,
+            ruleset,
         ], as_json=True)
 
 

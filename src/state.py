@@ -33,6 +33,7 @@ class State(dict):
                 'bot_level': 0,
                 'min_word': 3,
                 'game_length': 2,
+                'ruleset': 1,
             },
         )
 

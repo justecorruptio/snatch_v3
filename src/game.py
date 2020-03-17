@@ -170,6 +170,7 @@ class Game(object):
                 self.state.table,
                 sum([words for _, words in self.state.players], []),
                 target,
+                rearrange=self.state.options['ruleset'] == 2,
             )
 
         if how is None:
@@ -201,7 +202,7 @@ class Game(object):
 
         return {}
 
-    def set_options(self, nonce, bot_level=None, min_word=None, game_length=None):
+    def set_options(self, nonce, bot_level=None, min_word=None, game_length=None, ruleset=None):
 
         if self.state.phase != PHASE_LOBBY:
             return {'error': 'invalid state'}
@@ -223,6 +224,10 @@ class Game(object):
 
         if game_length is not None:
             self.state.options['game_length'] = game_length
+            self.state.step += 1
+
+        if ruleset is not None:
+            self.state.options['ruleset'] = ruleset
             self.state.step += 1
 
         return {}
@@ -269,6 +274,7 @@ class Game(object):
                 min_word_len,
                 max(min_word_len, max_word_len),
                 comb_order,
+                rearrange=self.state.options['ruleset'] == 2,
             )
 
             if target:

@@ -45,7 +45,7 @@ class Anagram(object):
                 big.remove(c)
         return big
 
-    def check(self, table, all_words, target):
+    def check(self, table, all_words, target, rearrange=False):
 
         target_hx = self.hash(target)
         table_hx = self.hash(table)
@@ -74,11 +74,19 @@ class Anagram(object):
 
                 if m == 0 and table_hx % d == 0:
                     words = [w for w, hx in comb]
-                    return words + self.subtract(target, *words), None
+                    sub = self.subtract(target, *words)
+                    if (
+                        rearrange and
+                        i == 1 and
+                        not self.is_rearranged(target, words[0], sub)
+                    ):
+                        error = 'Stolen word must be rearranged.'
+                        continue
+                    return words + sub, None
 
         return None, error
 
-    def bot(self, table, words, min_word_len, max_word_len, comb_order):
+    def bot(self, table, words, min_word_len, max_word_len, comb_order, rearrange=False):
 
         # protect ourselves from segfault
         table = table[-10:]
@@ -110,8 +118,11 @@ class Anagram(object):
 
                         target = random.choice(self.data[hx])
 
-                        if i == 1 and target == w[0] + 'S':
-                            continue
+                        if i == 1:
+                            if target == w[0] + 'S':
+                                continue
+                            if rearrange and not self.is_rearranged(target, w[0], l):
+                                continue
 
                         return target, list(w) + list(l)
         return None, None
@@ -119,6 +130,22 @@ class Anagram(object):
     def is_word(self, target):
         target_hx = self.hash(target)
         return target in self.data.get(target_hx, [])
+
+    def is_rearranged(self, target, word, sub):
+        sub = list(sub)
+        word = list(word)
+        for c in target:
+            if not word:
+                return False
+            if c == word[0]:
+                word = word[1:]
+                continue
+            if c in sub:
+                sub.remove(c)
+                continue
+            return True
+        return False
+
 
 anagram = Anagram(settings.WORD_LIST)
 easy_anagram = Anagram(settings.EASY_LIST)
@@ -134,7 +161,16 @@ if __name__ == '__main__':
     print res, '%0.2f ms' % ((b - a) * 1000,)
 
     a = time.time()
-    res = anagram.bot('EMPSTH', ['HEED', 'BAD'], 6, [1, 0])
+    res = anagram.bot('EMPSTH', ['HEED', 'BAD'], 6, 7, [1, 0])
     #res = anagram.bot('SAD', ['HEED'], 8, [1, 0])
     b = time.time()
     print res, '%0.2f ms' % ((b - a) * 1000,)
+
+    print anagram.is_rearranged('HEALTH', 'EAT', 'HHL') # F
+    print anagram.is_rearranged('HEALTH', 'ETA', 'HHL') # T
+    print anagram.is_rearranged('ABC', 'AB', 'C') # F
+    print anagram.is_rearranged('ABC', 'BC', 'A') # F
+    print anagram.is_rearranged('ABC', 'B', 'AC') # F
+    print anagram.is_rearranged('ABC', 'CA', 'B') # T
+
+    print anagram.bot('O', ['HELL'], 3, 7, [1, 0], True) # non found
