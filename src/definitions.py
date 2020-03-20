@@ -26,8 +26,7 @@ class Definitions(object):
     def lookup(self, word):
         return self.data.get(
             word.lower(),
-            'Definition not found.',
-        )
+        ) or 'Definition not found.'
 
 
 definitions = Definitions(settings.DEF_FILE)
