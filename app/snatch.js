@@ -38,6 +38,10 @@ function alert(msg) {
     showMessage(msg, 'danger', 5000);
 }
 
+function warn(msg) {
+    showMessage(msg, 'warning', 10000);
+}
+
 function log(msg) {
     showMessage(msg, 'info', 20000);
 }
@@ -379,7 +383,7 @@ function apiWordInfo(word) {
     return $.ajax(settings.baseUrl + `/word/${word}`, {
         type: 'GET',
     }).done(function(data) {
-        log(data.definition);
+        warn(data.definition);
     }).fail(function(data) {
         alert('Error getting definition.');
     })
