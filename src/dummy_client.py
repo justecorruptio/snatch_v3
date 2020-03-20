@@ -3,7 +3,7 @@ import sys
 import threading
 
 
-BASE_URL = 'http://localhost:8080/game'
+BASE_URL = 'https://qa.snatch.cc/api/game'
 
 sys.argv.pop(0)
 

@@ -164,16 +164,16 @@ function renderBoard(data) {
     switch(data.phase) {
         case 1:
             $('.snatch-area-inputs-start').show();
-            $(`#snatch-display-add-bot>label`).removeClass('active');
+            $(`#snatch-display-add-bot>label`).removeClass('active focus');
             $(`#snatch-display-add-bot>label[data-value="${data.options.bot_level}"]`)
                 .addClass('active');
-            $(`#snatch-display-min-word>label`).removeClass('active');
+            $(`#snatch-display-min-word>label`).removeClass('active focus');
             $(`#snatch-display-min-word>label[data-value="${data.options.min_word}"]`)
                 .addClass('active');
-            $(`#snatch-display-game-length>label`).removeClass('active');
+            $(`#snatch-display-game-length>label`).removeClass('active focus');
             $(`#snatch-display-game-length>label[data-value="${data.options.game_length}"]`)
                 .addClass('active');
-            $(`#snatch-display-ruleset>label`).removeClass('active');
+            $(`#snatch-display-ruleset>label`).removeClass('active focus');
             $(`#snatch-display-ruleset>label[data-value="${data.options.ruleset}"]`)
                 .addClass('active');
             break;
