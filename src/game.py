@@ -129,7 +129,16 @@ class Game(object):
         else:
             game_length = self.state.options['game_length']
             peel_delay = settings.GAME_LENGTHS[game_length][1]
-            async.peel(self.name, delay=peel_delay)
+            table_length = len(self.state.table)
+            if table_length < 12:
+                multiplier = 1.0
+            elif table_length < 24:
+                multiplier = 1.5
+            elif table_length < 40:
+                multiplier = 2.3
+            else:
+                multiplier = 3.7
+            async.peel(self.name, delay=peel_delay * multiplier)
 
         return None
 
