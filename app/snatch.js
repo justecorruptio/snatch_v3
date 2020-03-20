@@ -153,10 +153,19 @@ function renderBoard(data) {
         </div>`));
         $row.append($(`<div class="snatch-handle snatch-handle-p-${i}">${h}</div>`));
         for(j = 0; j< words.length; j++) {
-            $row.append($(`<div class="snatch-tile snatch-tile-p-${i}">${words[j]}</div>`));
+            $row.append($(`<div
+                id="snatch-tile-p-${i}-word-${j}"
+                class="snatch-tile snatch-tile-p-${i} snatch-tile-word"
+            >${words[j]}</div>`));
         }
         $players.append($row);
     }
+    $('.snatch-tile-word').off();
+    $('.snatch-tile-word').on('click', function(event) {
+        var $el = $(this),
+            word = $el.text();
+        apiWordInfo(word);
+    });
 
     $('.snatch-area-inputs').hide();
     game.phase = data.phase;
@@ -247,7 +256,7 @@ function apiCreateGame() {
     else {
         post_data = '{}';
     }
-    return $.ajax(settings.baseUrl, {
+    return $.ajax(settings.baseUrl + '/game', {
         type: 'POST',
         data: post_data,
     }).done(function(data) {
@@ -262,7 +271,7 @@ function apiSetOptions(field, value) {
         nonce: game.nonce
     };
     data[field] = value;
-    return $.ajax(settings.baseUrl + `/${game.name}/options`, {
+    return $.ajax(settings.baseUrl + `/game/${game.name}/options`, {
         type: 'POST',
         data: JSON.stringify(data)
     }).done(function(data) {
@@ -273,7 +282,7 @@ function apiSetOptions(field, value) {
 }
 
 function apiStartGame() {
-    return $.ajax(settings.baseUrl + `/${game.name}/start`, {
+    return $.ajax(settings.baseUrl + `/game/${game.name}/start`, {
         type: 'POST',
         data: JSON.stringify({
             nonce: game.nonce,
@@ -295,7 +304,7 @@ function apiPlayGame() {
         updateSnatchWord('');
         return;
     }
-    return $.ajax(settings.baseUrl + `/${game.name}/play`, {
+    return $.ajax(settings.baseUrl + `/game/${game.name}/play`, {
         type: 'POST',
         data: JSON.stringify({
             nonce: game.nonce,
@@ -315,7 +324,7 @@ function apiJoinGame() {
     if(game.phase == 4 && game.next_name) {
         game_name = game.next_name;
     }
-    return $.ajax(settings.baseUrl + `/${game_name}/join`, {
+    return $.ajax(settings.baseUrl + `/game/${game_name}/join`, {
         type: 'POST',
         data: JSON.stringify({
             handle: game.handle
@@ -341,7 +350,7 @@ function apiPollGame(step, halt) {
     if(step != undefined) {
         query = '?step=' + step;
     }
-    pollXhr = $.ajax(settings.baseUrl + `/${game.name}${query}`, {
+    pollXhr = $.ajax(settings.baseUrl + `/game/${game.name}${query}`, {
         type: 'GET',
     });
     pollXhr.done(function(data) {
@@ -364,6 +373,16 @@ function apiPollGame(step, halt) {
         }
     });
     return pollXhr;
+}
+
+function apiWordInfo(word) {
+    return $.ajax(settings.baseUrl + `/word/${word}`, {
+        type: 'GET',
+    }).done(function(data) {
+        log(data.definition);
+    }).fail(function(data) {
+        alert('Error getting definition.');
+    })
 }
 
 $(function() {

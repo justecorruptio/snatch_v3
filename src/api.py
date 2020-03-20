@@ -7,6 +7,7 @@ import web
 
 sys.path.append(os.path.dirname(__file__))
 
+from definitions import definitions
 from fabric import fabric, Job
 from service import sync
 from state import State
@@ -21,6 +22,7 @@ urls = (
     '/game/([a-zA-Z]{5})/start', 'GameStart',
     '/game/([a-zA-Z]{5})/play', 'GamePlay',
     '/game/([a-zA-Z]{5})/options', 'GameOptions',
+    '/word/([a-zA-Z]{2,15})', 'WordInfo',
 )
 
 web.config.debug = False
@@ -123,6 +125,13 @@ class GameOptions(object):
             game_length,
             ruleset,
         ], as_json=True)
+
+
+class WordInfo(object):
+    def GET(self, word):
+        return json.dumps({
+            "definition": definitions.lookup(word),
+        })
 
 
 class SnatchMiddleware(object):
