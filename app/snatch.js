@@ -325,7 +325,7 @@ function apiJoinGame() {
             alert(data.error);
             return Promise.reject();
         }
-        game.name = game_name;
+        game.name = data.name;
         game.nonce = data.nonce;
         startGame();
     })

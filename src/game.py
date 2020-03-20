@@ -63,6 +63,11 @@ class Game(object):
         self.log('link', next_name)
 
     def join(self, handle, nonce=None):
+        while self.state.next_name is not None:
+            self.name = self.state.next_name
+            self.state = State()
+            self.state.load(self.name)
+
         if any(p[0] == handle for p in self.state.players):
             return {'error': 'duplicate name'}
         next_player_num = len(self.state.players)
@@ -74,7 +79,7 @@ class Game(object):
         self.state.step += 1
         self.log('join', handle)
 
-        return {'nonce': nonce}
+        return {'nonce': nonce, 'name': self.name}
 
     def leave(self, nonce):
         player_num = self.state.nonces.get(nonce, None)
