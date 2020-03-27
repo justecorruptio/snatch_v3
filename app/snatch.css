@@ -43,6 +43,17 @@ input:read-only {
         position: fixed;
         top: 0px;
     }
+    #snatch-display-table {
+        max-height: calc(3 * 1.75rem);
+        overflow-y: scroll;
+    }
+}
+
+@media (max-width: 399.99px) {
+    .snatch-area-inputs-start {
+        position: fixed;
+        bottom: 0px;
+    }
 }
 
 #snatch-display-name{
@@ -139,8 +150,9 @@ input:read-only {
 
 .snatch-key, .snatch-key>div {
     width: calc(10vw - .4rem);
-    height: 2.5rem;
+    height: 2.2rem;
 }
+
 #snatch-keyboard>div {
     margin: .2rem;
     position: relative;
