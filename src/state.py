@@ -29,13 +29,14 @@ class State(dict):
             players=[],
             nonces={},
             next_name=None,
-            options={
+        )
+        if 'options' not in self:
+            self['options'] = {
                 'bot_level': 0,
                 'min_word': 3,
                 'game_length': 2,
                 'ruleset': 1,
-            },
-        )
+            }
 
     def cleaned(self):
         ret = dict(self)

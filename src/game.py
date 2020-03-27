@@ -47,6 +47,8 @@ class Game(object):
     @classmethod
     def create(cls, prev_name=None):
         game = cls()
+        if prev_name is not None:
+            game.state.load(prev_name)
         game.state.reset()
         success = False
         while not success:
