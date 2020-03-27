@@ -424,28 +424,23 @@ $(function() {
     $('#snatch-input-word').on('change', cleanInput);
 
     $('#snatch-input-word').on('keydown', function(event) {
+        var i = event.which,
+            $el = $(this),
+            val = $el.val().toUpperCase();
+        if (val && i == 13) {
+            apiPlayGame();
+            return false;
+        }
+        return true;
+    })
+
+    $('#snatch-input-word').on('keyup', function(event) {
+        cleanInput.bind(this)();
         event.preventDefault();
         var i = event.which,
-            c = '',
             $el = $(this),
-            val = $el.val();
-        if (i >= 97 && i <= 122){
-            c = String.fromCharCode(i - 32);
-        }
-        else if (i >= 65 && i<= 90){
-            c = String.fromCharCode(i);
-        }
-
-        if (c != '' && val.length < 15) {
-            updateSnatchWord(val + c);
-        }
-        else if (i == 8 && val != '') {
-            updateSnatchWord(val.substr(0, val.length - 1));
-        }
-        else if (i == 13) {
-            apiPlayGame();
-        }
-        return false;
+            val = $el.val().toUpperCase();
+        updateSnatchWord(val);
     });
 
     $('#snatch-input-name').on('keypress', function(event) {

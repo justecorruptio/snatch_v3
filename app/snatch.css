@@ -236,3 +236,11 @@ input:read-only {
 .snatch-key:last-child, .snatch-key:last-child>div {
     width: calc(15vw - .4rem);
 }
+
+#snatch-input-word {
+    text-transform: uppercase;
+}
+
+#snatch-input-word::placeholder {
+    text-transform: none;
+    }
