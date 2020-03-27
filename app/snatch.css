@@ -26,7 +26,11 @@ input:read-only {
             transparent,
             transparent 10px,
             #f8f8f8 10px,
-            #f8f8f8 20px
+            #f8f8f8 20px,
+            transparent 20px,
+            transparent 27px,
+            #f8f8f8 27px,
+            #f8f8f8 30px
         ),
         linear-gradient(
             to bottom,
