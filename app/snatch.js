@@ -231,25 +231,47 @@ function renderBoard(data) {
     var log_data = data.log[data.log.length - 1];
     if (log_data[0] > lastLogStep) {
         lastLogStep = log_data[0];
-        //if(log_data[1] == 'join') {
-        //    log(`${log_data[2]} has joined the game.`);
-        //}
-        if(log_data[1] == 'play') {
-            log(`${data.players[log_data[3]][0]} plays ${log_data[2]}.`);
-        }
-        else if(log_data[1] == 'steal') {
-            if(log_data[3] == log_data[5]) {
-                log(`${data.players[log_data[3]][0]} makes ` +
-                    `${log_data[2]} from ${log_data[4]}.`
-                );
-            }
-            else {
-                log(`${data.players[log_data[3]][0]} makes ` +
-                    `${log_data[2]} stealing ${log_data[4]}.`
-                );
-            }
+        let logString = decodeLog(log_data, data.players);
+        if(logString) {
+            log(logString);
         }
     }
+
+    var $history = $('#history');
+    $history.empty();
+    for(let i = 0; i < data.log.length ; i++) {
+        let logString = decodeLog(data.log[data.log.length - 1 - i], data.players);
+        if (logString){
+            $history.append($(`
+                <h6
+                    class="mx-1"
+                    style="opacity: ${ 1.0 - .15 * i};"
+                ><small>${logString}</small></h6>
+            `));
+        }
+    }
+}
+
+function decodeLog(logData, players) {
+    if(logData[1] == 'join') {
+        return `${logData[2]} has joined the game`;
+    }
+    if(logData[1] == 'play') {
+        return `${players[logData[3]][0]} plays ${logData[2]}`;
+    }
+    else if(logData[1] == 'steal') {
+        if(logData[3] == logData[5]) {
+            return (`${players[logData[3]][0]} makes ` +
+                `${logData[2]} from ${logData[4]}`
+            );
+        }
+        else {
+            return (`${players[logData[3]][0]} makes ` +
+                `${logData[2]} stealing ${logData[4]}`
+            );
+        }
+    }
+    return '';
 }
 
 function apiCreateGame() {

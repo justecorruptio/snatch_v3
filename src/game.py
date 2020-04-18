@@ -352,6 +352,6 @@ class Game(object):
         return result
 
     def log(self, *message):
-        self.state.log = self.state.log[-4:] + [
+        self.state.log = self.state.log[-6:] + [
             (self.state.step,) + tuple(message),
         ]

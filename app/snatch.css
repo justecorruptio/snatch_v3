@@ -259,4 +259,8 @@ input:read-only {
 
 #snatch-input-word::placeholder {
     text-transform: none;
-    }
+}
+
+#history h6{
+    margin-bottom: .25rem;
+}
