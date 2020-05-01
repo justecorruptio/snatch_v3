@@ -10,7 +10,7 @@ class Definitions(object):
                 line = line.strip()
                 words, definition = line.split('\t', 1)
                 match = re.search(
-                    r'(?:[A-Z]+)[A-Z ]*[/a-z]+\s(?:pl\.\s)?(?:[-, A-Z]|or)*((?:[A-Z]?[-, a-z])*)',
+                    r'(?:[A-Z]+)[A-Z ]*[/a-z]+\s(?:pl\.\s)?(?:[-, A-Z]|or )*((?:[A-Z]?[-, a-z])*)',
                     definition,
                 )
                 if match:

@@ -16,7 +16,7 @@ from state import (
     PHASE_ENDGAME,
     PHASE_ENDED,
 )
-from utils import make_bag, rand_chars
+from utils import make_bag, rand_chars, lru
 
 
 class GameError(Exception):
@@ -301,6 +301,14 @@ class Game(object):
         return {}
 
     @classmethod
+    @lru(100)
+    def word_info(cls, word):
+        return {
+            'definition': definitions.lookup(word),
+            'extensions': anagram.extensions(word),
+        }
+
+    @classmethod
     def execute(cls, job):
         action = job.data['action']
         args = job.data.get('args', [])
@@ -312,10 +320,7 @@ class Game(object):
             return result
 
         if action == 'word_info':
-            result = {
-                'definition': definitions.lookup(args[0]),
-                'extensions': anagram.extensions(args[0]),
-            }
+            result = cls.word_info(*args)
             job.write_result(result)
             return result
 

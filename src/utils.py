@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import random
 
 from string import ascii_uppercase
@@ -44,3 +45,22 @@ def make_bag(letters):
     random.shuffle(conson)
     return ''.join(near_merge(vowels, conson))
 
+
+def lru(size=100):
+    def wrapper(func):
+        func.__lru = OrderedDict()
+        def wrapped(*args, **kwargs):
+            key = tuple(args) + tuple(sorted(kwargs.iteritems()))
+            if key in func.__lru:
+                value = func.__lru[key]
+                del func.__lru[key]
+            else:
+                value = func(*args, **kwargs)
+
+            func.__lru[key] = value
+            while len(func.__lru) > size:
+                func.__lru.popitem(last=False)
+
+            return value
+        return wrapped
+    return wrapper

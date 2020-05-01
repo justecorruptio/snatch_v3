@@ -415,6 +415,9 @@ function apiWordInfo(word) {
                     ))
                 }</div>`;
             }
+            if(data.extensions.length == 0) {
+                msg += '<div class="col-sm-12 ext_letter">No Extensions!</div>';
+            }
             msg += '</div></div>';
         }
         warn(msg);

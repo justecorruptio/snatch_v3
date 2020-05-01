@@ -7,8 +7,6 @@ import web
 
 sys.path.append(os.path.dirname(__file__))
 
-#from anagram import anagram
-from definitions import definitions
 from fabric import fabric, Job
 from service import sync
 from state import State
