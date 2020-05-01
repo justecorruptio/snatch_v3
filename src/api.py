@@ -128,7 +128,7 @@ class GameOptions(object):
 
 class WordInfo(object):
     def GET(self, word):
-        return sync.word_info(None, [word], as_json=True)
+        return sync.word_info(None, [word.upper()], as_json=True)
 
 
 class SnatchMiddleware(object):

@@ -24,9 +24,19 @@ class Definitions(object):
                     #    print word, definition
 
     def lookup(self, word):
-        return self.data.get(
-            word.lower(),
-        ) or 'Definition not found.'
+        word = word.lower()
+        defn = self.data.get(word)
+
+        if not defn and word[:2] == 're' and word[2:] in self.data:
+            return self.data[word[2:]] + ', again'
+
+        if not defn:
+            return 'Definition not found.'
+
+        if ' ' not in defn and defn in self.data:
+            return defn + '; ' + self.data[defn]
+
+        return defn
 
 
 definitions = Definitions(settings.DEF_FILE)
