@@ -30,6 +30,9 @@ class Anagram(object):
             self.data.setdefault(hx, []).append(line)
         fh.close()
 
+        self.ordered_hx = [[] for i in xrange(16)]
+        for hx, words in sorted(self.data.iteritems()):
+            self.ordered_hx[len(words[0])].append(hx)
 
     def hash(self, letters):
         global LETTERS_TO_PRIMES
@@ -146,6 +149,27 @@ class Anagram(object):
             return True
         return False
 
+    def extensions(self, word):
+        hx = self.hash(word)
+        tmp = []
+        for i in xrange(len(word) + 1, 16):
+            for other in self.ordered_hx[i]:
+                if other % hx == 0 and other != hx:
+                    tmp.extend(self.data.get(other, []))
+                    if len(tmp) > 50:
+                        break
+            if len(tmp) > 10:
+                break
+        tmp.sort(key=lambda x: (len(x), x))
+
+        result = []
+        for ext in tmp:
+            res_word = ext
+            for letter in self.subtract(ext, word):
+                res_word = res_word.replace(letter, letter.lower(), 1)
+            result.append(res_word)
+        return result
+
 
 anagram = Anagram(settings.WORD_LIST)
 easy_anagram = Anagram(settings.EASY_LIST)
@@ -174,3 +198,6 @@ if __name__ == '__main__':
     print anagram.is_rearranged('ABC', 'CA', 'B') # T
 
     print anagram.bot('O', ['HELL'], 3, 7, [1, 0], True) # non found
+
+    print anagram.extensions('OUGUI')
+    print anagram.extensions('MEDICARE')

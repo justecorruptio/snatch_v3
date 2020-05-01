@@ -264,3 +264,7 @@ input:read-only {
 #history h6{
     margin-bottom: .25rem;
 }
+
+.ext_letter {
+    color: #AA00AA;
+}

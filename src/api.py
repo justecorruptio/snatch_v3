@@ -7,6 +7,7 @@ import web
 
 sys.path.append(os.path.dirname(__file__))
 
+#from anagram import anagram
 from definitions import definitions
 from fabric import fabric, Job
 from service import sync
@@ -129,9 +130,7 @@ class GameOptions(object):
 
 class WordInfo(object):
     def GET(self, word):
-        return json.dumps({
-            "definition": definitions.lookup(word),
-        })
+        return sync.word_info(None, [word], as_json=True)
 
 
 class SnatchMiddleware(object):

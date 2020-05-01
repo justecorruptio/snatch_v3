@@ -5,6 +5,7 @@ import sys
 import time
 
 from anagram import anagram, easy_anagram
+from definitions import definitions
 from fabric import fabric, Job
 from service import sync, async
 import settings
@@ -307,6 +308,14 @@ class Game(object):
         if action == 'create':
             game = cls.create(*args)
             result = {'name': game.name}
+            job.write_result(result)
+            return result
+
+        if action == 'word_info':
+            result = {
+                'definition': definitions.lookup(args[0]),
+                'extensions': anagram.extensions(args[0]),
+            }
             job.write_result(result)
             return result
 

@@ -19,7 +19,7 @@ function debounce() {
 
 function showMessage(msg, level, duration) {
     var $el = $('.snatch-message');
-    $el.find('.badge').attr('class', 'w-100 badge badge-' + level).text(msg);
+    $el.find('.badge').attr('class', 'w-100 badge badge-' + level).html(msg);
     $el.stop(true, true);
 
     $el.css({opacity: 0})
@@ -39,7 +39,7 @@ function alert(msg) {
 }
 
 function warn(msg) {
-    showMessage(msg, 'warning', 10000);
+    showMessage(msg, 'warning', 30000);
 }
 
 function log(msg) {
@@ -405,7 +405,19 @@ function apiWordInfo(word) {
     return $.ajax(settings.baseUrl + `/word/${word}`, {
         type: 'GET',
     }).done(function(data) {
-        warn(data.definition);
+        var msg = data.definition;
+        if(game.phase == 4) {
+            msg += '<div class="container mt-2"><div class="row">';
+            for(let i = 0; i < data.extensions.length; i++) {
+                msg += `<div class="col-sm-4">${
+                    data.extensions[i].replace(/[a-z]/g, (x) => (
+                        '<span class="ext_letter">' + x.toUpperCase() + '</span>'
+                    ))
+                }</div>`;
+            }
+            msg += '</div></div>';
+        }
+        warn(msg);
     }).fail(function(data) {
         alert('Error getting definition.');
     })
