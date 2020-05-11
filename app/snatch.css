@@ -268,3 +268,9 @@ input:read-only {
 .ext_letter {
     color: #AA00AA;
 }
+
+.copyright {
+    position: fixed;
+    right: 5px;
+    bottom: 0px;
+}

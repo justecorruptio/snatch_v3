@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Snatch!</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="apple-touch-icon" href="/touch-icon-iphone.png">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+            integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+            crossorigin="anonymous"
+        >
+        <link rel="stylesheet" href="snatch.css?v=27">
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-47887870-3"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'UA-47887870-3');
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-8 offset-lg-2 snatch-main px-0">
+
+        <div class="container p-1 snatch-page snatch-page-0">
+            <div class="row mt-5"></div>
+            <div class="row">
+                <div class="col mt-5">
+                    <h1 class="display-3">About!</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mt-5">
+                <h2>What is this?</h2>
+                <p>Snatch! is an online version of the
+                <a href="https://en.wikipedia.org/wiki/Anagrams">Anagrams</a> game
+                where you can play with friends or against a bot.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mt-5">
+                <h2>Word List</h2>
+                <p>
+                    This game uses the
+                    <a href="https://www.scrabbleplayers.org/landing/snatch">
+                        NASPA Word List 2018
+                    </a> © NASPA 2018. The copy included in this app is licensed for
+                    personal use. You may not use it for any commercial purposes.
+                </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mt-5">
+                <a href="/">Go back</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <small>© 2020 Jay Chan | <a href="/about">About</a></small>
+            </div>
+        </div>
+
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"
+        ></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"
+        ></script>
+
+        <script src="snatch.js?v=25"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"
+        ></script>
+
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+            integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+            crossorigin="anonymous"
+        ></script>
+
+        <script src="howto.js?v=7"></script>
+
+    </body>
+</html>
