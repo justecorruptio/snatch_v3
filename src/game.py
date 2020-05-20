@@ -5,7 +5,7 @@ import sys
 import time
 
 from anagram import anagram, easy_anagram
-from definitions import definitions
+from definitions_naspa import definitions
 from fabric import fabric, Job
 from service import sync, async
 import settings

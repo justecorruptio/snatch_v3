@@ -8,6 +8,9 @@ WORD_LIST = os.path.join(BASE_DIR, 'data/twl.txt')
 EASY_LIST = os.path.join(BASE_DIR, 'data/easy.txt')
 DEF_FILE = os.path.join(BASE_DIR, 'data/def.txt')
 
+# This file is not included in repo
+DEF_FILE_NASPA = os.path.join(BASE_DIR, 'data/nwl2018-defs.json')
+
 QUICK_LETTERS = (
     'AAAAABBCCDDEEEEEEEEFFGGHHIIIIIJKL'
     'LMMNNNOOOOPPQRRRRSSSTTTTUUVVWXYYZ'
