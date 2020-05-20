@@ -31,24 +31,24 @@
             <div class="row">
                 <div class="col-12 col-lg-8 offset-lg-2 snatch-main px-0">
 
-        <div class="container p-1 snatch-page snatch-page-0">
-            <div class="row mt-5"></div>
+        <div class="container p-1">
             <div class="row">
                 <div class="col mt-5">
                     <h1 class="display-3">About!</h1>
                 </div>
             </div>
+
             <div class="row">
-                <div class="col mt-5">
-                <h2>What is this?</h2>
+                <div class="col mt-3">
+                <h3>What is this?</h3>
                 <p>Snatch! is an online version of the
                 <a href="https://en.wikipedia.org/wiki/Anagrams">Anagrams</a> game
                 where you can play with friends or against a bot.</p>
                 </div>
             </div>
             <div class="row">
-                <div class="col mt-5">
-                <h2>Word List</h2>
+                <div class="col mt-3">
+                <h3>Word List</h3>
                 <p>
                     This game uses the
                     <a href="https://www.scrabbleplayers.org/landing/snatch">
@@ -59,9 +59,50 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col mt-5">
+                <div class="col mt-3">
+                <h3>Contact Us</h3>
+                <p>
+                    If you have feedback about how we can make this better, email
+                    us at snatch(at)jay.vg!
+                </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mt-3">
                 <a href="/">Go back</a>
                 </div>
+            </div>
+            <hr/>
+            <div id="changelog" class="row d-none d-sm-block">
+                <div class="col mt-2 text-secondary">
+                <h3>Change Log</h3>
+                <pre class="text-secondary">
+2020/05/20 - v1.4
+    Update definitions to use official NAPSA dictionary.
+    Show word extensions after the game.
+    Adding "about" page.
+2020/04/18 - v1.3
+    Show move history.
+    Carry options from last game.
+2020/03/20 - v1.2
+    Adding partial definitions.
+    An old game code with bring a player to the current game.
+2020/03/17 - v1.1
+    Adding "rearrange" game mode.
+    Updated to NWL18
+2018/01/12 - v1.0
+    Minor UX fixes.
+    Server is made more robust.
+2018/01/06 - v0.9
+    Added game length option
+    Tweaks to bot difficulties.
+2018/01/05 - v0.8
+    Added tutorial.
+    Improved custom keyboard on mobile.
+    Fixed minor bugs in connections.
+2017/12/30 - v0.7
+    Initial Release.
+                </pre>
             </div>
             <div class="copyright">
                 <small>© 2020 Jay Chan | <a href="/about">About</a></small>
@@ -71,28 +112,6 @@
                 </div>
             </div>
         </div>
-
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"
-            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-            crossorigin="anonymous"
-        ></script>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"
-        ></script>
-
-        <script src="snatch.js?v=25"></script>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"
-        ></script>
-
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
-            integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
-            crossorigin="anonymous"
-        ></script>
-
-        <script src="howto.js?v=7"></script>
 
     </body>
 </html>

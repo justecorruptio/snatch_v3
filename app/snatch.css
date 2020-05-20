@@ -18,8 +18,12 @@ input:read-only {
     opacity: 0;
 }
 
-.snatch-main {
+.full-height {
     height: calc(100vh);
+}
+
+.snatch-main {
+    min-height: calc(100vh);
     background:
         repeating-linear-gradient(
             135deg,
