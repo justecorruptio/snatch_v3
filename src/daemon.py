@@ -36,7 +36,7 @@ class Daemon(object):
                 self.logger.error(traceback.format_exc())
             else:
                 self.logger.info(
-                    '%6.1fms, %+6.1fms off | %s -> %s' % (
+                    '%6.2fms, %+6.2fms off | %s -> %s' % (
                         (end_ts - start_ts) * 1000.,
                         (start_ts - planned_ts) * 1000.,
                         job.data,

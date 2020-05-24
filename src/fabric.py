@@ -1,5 +1,5 @@
 import json
-from redis import StrictRedis
+from redis import StrictRedis, ConnectionPool
 import time
 
 import settings
@@ -20,7 +20,7 @@ ZPOP = """
 
 BACKOFF_PLAN = ([0] * 5 + [1] * 20 + [2])
 
-redis = StrictRedis(**settings.REDIS)
+redis = StrictRedis(connection_pool=ConnectionPool(**settings.REDIS))
 redis.zpop = redis.register_script(ZPOP)
 
 
