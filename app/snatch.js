@@ -71,15 +71,6 @@ function updateSnatchWord(word) {
     $('#snatch-overlay-word').text(word);
 }
 
-function cleanInput() {
-    var $el = $(this),
-        val = $el.val();
-
-    val = val.replace(/^\s+|\s+$/g, '');
-    val = val.replace(/\s+/g, ' ');
-    $el.val(val);
-}
-
 function eventKeyboardIndex(event) {
     var $el = $('#snatch-keyboard');
     var offset = $el.offset();
@@ -253,9 +244,9 @@ function renderBoard(data) {
 }
 
 function decodeLog(logData, players) {
-    if(logData[1] == 'join') {
-        return `${logData[2]} has joined the game`;
-    }
+    //if(logData[1] == 'join') {
+    //    return `${logData[2]} has joined the game`;
+    //}
     if(logData[1] == 'play') {
         return `${players[logData[3]][0]} plays ${logData[2]}`;
     }
@@ -426,6 +417,15 @@ function apiWordInfo(word) {
     })
 }
 
+function cleanInput() {
+    var $el = $(this),
+        val = $el.val();
+
+    val = val.replace(/^\s+|\s+$/g, '');
+    val = val.replace(/\s+/g, ' ');
+    $el.val(val);
+}
+
 $(function() {
 
     var hash;
@@ -463,7 +463,8 @@ $(function() {
     $('#snatch-input-word').on('keydown', function(event) {
         var i = event.which,
             $el = $(this),
-            val = $el.val().toUpperCase();
+            val = $el.val().toUpperCase().replace(/[^A-Za-z]/g,'');
+        $el.val(val);
         if (val && i == 13) {
             apiPlayGame();
             return false;
@@ -476,7 +477,8 @@ $(function() {
         event.preventDefault();
         var i = event.which,
             $el = $(this),
-            val = $el.val().toUpperCase();
+            val = $el.val().toUpperCase().replace(/[^A-Za-z]/g,'');
+        $el.val(val);
         updateSnatchWord(val);
     });
 

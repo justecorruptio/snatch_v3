@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 import sys
 import time
 import web
@@ -90,6 +91,10 @@ class GamePlay(object):
         if not word:
             return '{"error":"word missing"}'
         word = word.upper()
+
+        if not re.match(r'^[A-Z]', word):
+            return '{"error":"Invalid characters"}'
+
         return sync.play(name, [nonce, word], as_json=True)
 
 
