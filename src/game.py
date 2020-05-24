@@ -58,6 +58,11 @@ class Game(object):
 
         if prev_name:
             async.link(prev_name, [game.name])
+
+        bot_level = game.state.options['bot_level']
+        if bot_level > 0:
+            async.add_bot(game.name, [bot_level])
+
         return game
 
     def link(self, next_name):
@@ -251,7 +256,6 @@ class Game(object):
 
     def add_bot(self, level):
 
-        # TODO: maybe allow more than one?
         self.remove_bot()
 
         handle = [
