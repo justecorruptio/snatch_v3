@@ -18,11 +18,7 @@ ZPOP = """
     return nil
 """
 
-BACKOFF_PLAN = (
-    [0] * 5 + [1] * 5 + [2] * 10 +
-    [5] * 15 + [10]
-)
-
+BACKOFF_PLAN = ([0] * 5 + [1] * 20 + [2])
 
 redis = StrictRedis(**settings.REDIS)
 redis.zpop = redis.register_script(ZPOP)
@@ -69,9 +65,10 @@ class Fabric(object):
     def poll(self, key):
         """returns a tuple of message and planned time."""
         tries = 0
+        backoff_ms = 0
         while True:
             now_ms = int(time.time() * 1000)
-            res = redis.zpop(args=[key, now_ms])
+            res = redis.zpop(args=[key, now_ms + backoff_ms])
 
             if res is not None:
                 mesg, planned_ms = res
