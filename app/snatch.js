@@ -258,7 +258,8 @@ function decodeLog(logData, players) {
         }
         else {
             return (`${players[logData[3]][0]} makes ` +
-                `${logData[2]} stealing ${logData[4]}`
+                `${logData[2]} stealing ${logData[4]} ` +
+                `from ${players[logData[5]][0]}`
             );
         }
     }
@@ -438,6 +439,7 @@ $(function() {
             }
             $('#snatch-input-name').val(hash);
             log('You\'ve been invited to join a game!');
+            $('.snatch-display-new-game').addClass('d-none');
         }
     }
 
