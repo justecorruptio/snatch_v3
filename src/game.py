@@ -112,6 +112,9 @@ class Game(object):
         if player_num is None:
             return {'error': 'invalid player'}
 
+        if self.state.phase != PHASE_LOBBY:
+            return {'error': 'invalid state'}
+
         self.state.phase = PHASE_STARTED
         self.state.start_ts = time.time()
         game_length = self.state.options['game_length']
