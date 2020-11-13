@@ -439,7 +439,6 @@ $(function() {
             }
             $('#snatch-input-name').val(hash);
             log('You\'ve been invited to join a game!');
-            $('.snatch-display-new-game').addClass('d-none');
         }
     }
 
