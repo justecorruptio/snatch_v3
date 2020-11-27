@@ -77,6 +77,8 @@
                 <div class="col mt-2 text-secondary">
                 <h3>Change Log</h3>
                 <pre class="text-secondary">
+2020/11/26 - v1.5
+    End now button
 2020/05/20 - v1.4
     Update definitions to use official NAPSA dictionary.
     Show word extensions after the game.
