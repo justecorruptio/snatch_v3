@@ -39,8 +39,10 @@ def worker():
     print '===== GAME:', name, '======\n'
     print '     Table:', r['table'], '\n'
 
-    for h, words in r['players']:
-        print '%10s:' % (h,), ' '.join(words)
+    for player in r['players']:
+        handle = player['handle']
+        words = player['words']
+        print '%10s:' % (handle,), ' '.join(words)
 
     step = r['step']
     phase = r['phase']
@@ -62,4 +64,4 @@ thread.start()
 while True:
     word = raw_input().strip()
     r = requests.post(BASE_URL + '/' + name + '/play', json={'nonce': nonce, 'word': word})
-    print r.json()
+    # print r.json()

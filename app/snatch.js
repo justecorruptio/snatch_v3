@@ -137,7 +137,7 @@ function renderBoard(data) {
     var $players = $('#snatch-display-players');
     $players.html('');
     for(i = 0; i < data.players.length; i++) {
-        var [h, words] = data.players[i],
+        var {handle, words} = data.players[i],
             $row = $('<div class="d-flex flex-wrap align-items-baseline">'),
             score = 0;
         for(j = 0; j< words.length; j++) {
@@ -146,7 +146,7 @@ function renderBoard(data) {
         $row.append($(`<div class="snatch-handle snatch-handle-score snatch-handle-p-${i}">
             ${score}
         </div>`));
-        $row.append($(`<div class="snatch-handle snatch-handle-p-${i}">${h}</div>`));
+        $row.append($(`<div class="snatch-handle snatch-handle-p-${i}">${handle}</div>`));
         for(j = 0; j< words.length; j++) {
             $row.append($(`<div
                 id="snatch-tile-p-${i}-word-${j}"
@@ -248,18 +248,18 @@ function decodeLog(logData, players) {
     //    return `${logData[2]} has joined the game`;
     //}
     if(logData[1] == 'play') {
-        return `${players[logData[3]][0]} plays ${logData[2]}`;
+        return `${players[logData[3]].handle} plays ${logData[2]}`;
     }
     else if(logData[1] == 'steal') {
         if(logData[3] == logData[5]) {
-            return (`${players[logData[3]][0]} makes ` +
+            return (`${players[logData[3]].handle} makes ` +
                 `${logData[2]} from ${logData[4]}`
             );
         }
         else {
-            return (`${players[logData[3]][0]} makes ` +
+            return (`${players[logData[3]].handle} makes ` +
                 `${logData[2]} stealing ${logData[4]} ` +
-                `from ${players[logData[5]][0]}`
+                `from ${players[logData[5]].handle}`
             );
         }
     }

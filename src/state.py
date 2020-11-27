@@ -10,6 +10,22 @@ PHASE_STARTED = 2
 PHASE_ENDGAME = 3
 PHASE_ENDED = 4
 
+''' **** SCHEMA ****
+    phase: phase number
+    step: vector clock
+    start_ts: start_ts of this phase
+    bag: list of letters
+    table: string of letters
+    log: list of log messages, recent last
+    players: list of players
+    nonces: dict mapping nonce key to player number
+    next_name: name of the next game.
+
+    **** PLAYER ****
+    handle: name
+    words: list of words
+'''
+
 
 class State(dict):
     def __getattr__(self, key):

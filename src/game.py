@@ -23,19 +23,6 @@ class GameError(Exception):
     pass
 
 
-''' **** SCHEMA ****
-    phase: phase number
-    step: vector clock
-    start_ts: start_ts of this phase
-    bag: list of letters
-    table: string of letters
-    log: list of log messages, recent last
-    players: list of (name, words) tuples
-    nonces: dict mapping nonce key to player number
-    next_name: name of the next game.
-'''
-
-
 class Game(object):
 
     logger = logging.getLogger('daemon')
@@ -76,12 +63,12 @@ class Game(object):
             self.state = State()
             self.state.load(self.name)
 
-        if any(p[0] == handle for p in self.state.players):
+        if any(p['handle'] == handle for p in self.state.players):
             return {'error': 'duplicate name'}
         next_player_num = len(self.state.players)
         if nonce is None:
             nonce = '%s_%03d' % (rand_chars(7), next_player_num)
-        self.state.players.append((handle, []))
+        self.state.players.append({'handle': handle, 'words': []})
         self.state.nonces[nonce] = next_player_num
 
         self.state.step += 1
@@ -94,7 +81,7 @@ class Game(object):
         if player_num is None:
             return {'error': 'invalid player'}
 
-        handle = self.state.players[player_num][0]
+        handle = self.state.players[player_num]['handle']
         del self.state.players[player_num]
         for key, val in self.state.nonces.items():
             if val > player_num:
@@ -193,7 +180,7 @@ class Game(object):
         if how is None:
             how, error = anagram.check(
                 self.state.table,
-                sum([words for _, words in self.state.players], []),
+                sum([player['words'] for player in self.state.players], []),
                 target,
                 rearrange=self.state.options['ruleset'] == 2,
             )
@@ -203,7 +190,8 @@ class Game(object):
 
         status = None
         for w in how:
-            for i, (_, words) in enumerate(self.state.players):
+            for i, player in enumerate(self.state.players):
+                words = player['words']
                 if w in words:
                     words.remove(w)
                     status = ('steal', target, player_num, w, i)
@@ -217,7 +205,7 @@ class Game(object):
         if not status:
             status = ('play', target, player_num)
 
-        self.state.players[player_num][1].append(target)
+        self.state.players[player_num]['words'].append(target)
         self.state.step += 1
 
         self.log(*status)
@@ -283,7 +271,7 @@ class Game(object):
             return {}
 
         player_num = self.state.nonces['BOT']
-        handle = self.state.players[player_num][0]
+        handle = self.state.players[player_num]['handle']
         level, list_id, loop_ttl, max_word_len, comb_order = (
             settings.BOTS[handle]
         )
@@ -293,7 +281,7 @@ class Game(object):
             target, how = [easy_anagram, anagram][list_id].bot(
                 self.state.table,
                 sum([
-                    words for _, words in self.state.players
+                    player['words'] for player in self.state.players
                 ], []),
                 min_word_len,
                 max(min_word_len, max_word_len),
