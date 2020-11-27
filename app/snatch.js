@@ -30,6 +30,7 @@ function showMessage(msg, level, duration) {
 
 function hideMessage() {
     var $el = $('.snatch-message');
+    $el.find('.badge').html(' ');
     $el.stop(true, true);
     $el.css({opacity: 0});
 }
@@ -180,8 +181,14 @@ function renderBoard(data) {
     });
 
     $('.snatch-area-inputs').hide();
+
+    if (game.phase != data.phase) {
+        hideMessage();
+    }
+
     game.phase = data.phase;
     game.min_word = data.options.min_word;
+
     switch(data.phase) {
         case 1:
             $('.snatch-area-inputs-start').show();
