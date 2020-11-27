@@ -68,7 +68,7 @@ class Game(object):
         next_player_num = len(self.state.players)
         if nonce is None:
             nonce = '%s_%03d' % (rand_chars(7), next_player_num)
-        self.state.players.append({'handle': handle, 'words': []})
+        self.state.add_player(handle)
         self.state.nonces[nonce] = next_player_num
 
         self.state.step += 1
@@ -149,7 +149,8 @@ class Game(object):
         delayed_time = time.time() - self.state.start_ts
         game_length = self.state.options['game_length']
         endgame_time = settings.GAME_LENGTHS[game_length][2]
-        if delayed_time < endgame_time:
+        end_voted, end_total = self.state.end_votes()
+        if delayed_time < endgame_time and not end_voted == end_total:
             # fix a tiny race condition, repeatedly try to end
             # the game until it is.
             async.end(self.name, delay=1)
@@ -242,6 +243,16 @@ class Game(object):
         if ruleset is not None:
             self.state.options['ruleset'] = ruleset
             self.state.step += 1
+
+        return {}
+
+    def end_now(self, nonce):
+        player_num = self.state.nonces.get(nonce, None)
+        if player_num is None:
+            return {'error': 'Invalid player'}
+
+        self.state.players[player_num]['end_vote'] = True
+        self.state.step += 1
 
         return {}
 

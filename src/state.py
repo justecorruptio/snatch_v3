@@ -54,6 +54,24 @@ class State(dict):
                 'ruleset': 1,
             }
 
+    def add_player(self, handle):
+        self.players.append({
+            'handle': handle,
+            'words': [],
+            'end_vote': False,
+        })
+
+    def end_votes(self):
+        voted = 0
+        total = 0
+        for nonce, player_id in self.nonces.iteritems():
+            if nonce == 'BOT':
+                continue
+            total += 1
+            if self.players[player_id]['end_vote']:
+                voted += 1
+        return [voted, total]
+
     def cleaned(self):
         ret = dict(self)
         if 'nonces' in ret:
@@ -68,6 +86,9 @@ class State(dict):
             ret['time_left'] = (
                 endgame_time - (time.time() - ret['start_ts'])
             )
+
+        ret['end_votes'] = self.end_votes()
+
         return ret
 
     def store(self, key, initial=False):

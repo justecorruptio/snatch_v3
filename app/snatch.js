@@ -59,11 +59,25 @@ function doCountdown(timeLeft, prev) {
             doCountdown(timeLeft , now);
         }, 100);
         status_msg = `Game ends in ${tl} seconds.`;
+        if(game.end_vote != game.name) {
+            $('#snatch-display-end-now').show();
+            $('#snatch-display-end-votes').hide();
+        } else {
+            $('#snatch-display-end-now').hide();
+            $('#snatch-display-end-votes').show();
+        }
     }
     else {
         status_msg = 'Game over.';
+        clearCountdown();
     }
-    $('#snatch-display-status').text(status_msg);
+    $('#snatch-display-status').html(status_msg);
+}
+
+function clearCountdown() {
+    clearTimeout(countdownInterval);
+    $('#snatch-display-end-now').hide();
+    $('#snatch-display-end-votes').hide();
 }
 
 function updateSnatchWord(word) {
@@ -106,6 +120,9 @@ function reset() {
     $('#snatch-input-name').val('');
     $('#snatch-display-table').html('');
     $('#snatch-display-players').html('');
+
+    $('#snatch-display-end-now').hide();
+    $('#snatch-display-end-votes').html('');
     if(pollXhr)
         pollXhr.abort();
     showPage(0);
@@ -215,6 +232,7 @@ function renderBoard(data) {
             break;
         case 4:
             status_msg = 'Game over.';
+            clearCountdown();
             break;
     }
     $('#snatch-display-status').text(status_msg);
@@ -241,6 +259,9 @@ function renderBoard(data) {
             `));
         }
     }
+
+    var $endVotes = $('#snatch-display-end-votes');
+    $endVotes.text(`${data.end_votes[0]} / ${data.end_votes[1]} voted.`);
 }
 
 function decodeLog(logData, players) {
@@ -355,6 +376,21 @@ function apiJoinGame() {
         game.name = data.name;
         game.nonce = data.nonce;
         startGame();
+    })
+}
+
+function apiEndNow() {
+    var game_name = game.name;
+    return $.ajax(settings.baseUrl + `/game/${game_name}/end-now`, {
+        type: 'POST',
+        data: JSON.stringify({
+            nonce: game.nonce,
+        })
+    }).done(function(data) {
+        if('error' in data) {
+            alert(data.error);
+            return Promise.reject();
+        }
     })
 }
 
@@ -624,6 +660,11 @@ $(function() {
             reset();
         }
      });
+
+    $('#snatch-button-end-now').on('click', function() {
+        game.end_vote = game.name;
+        apiEndNow();
+    });
 
      if (game.handle) {
         $('#snatch-input-handle').val(game.handle);

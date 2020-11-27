@@ -22,6 +22,7 @@ urls = (
     '/game/([a-zA-Z]{5})/start', 'GameStart',
     '/game/([a-zA-Z]{5})/play', 'GamePlay',
     '/game/([a-zA-Z]{5})/options', 'GameOptions',
+    '/game/([a-zA-Z]{2,15})/end-now', 'GameEndNow',
     '/word/([a-zA-Z]{2,15})', 'WordInfo',
 )
 
@@ -129,6 +130,17 @@ class GameOptions(object):
             game_length,
             ruleset,
         ], as_json=True)
+
+
+class GameEndNow(object):
+    def POST(self, name):
+        data = json.loads(web.data() or '{}')
+
+        nonce = data.get('nonce', None)
+        if not nonce:
+            return '{"error":"nonce missing"}'
+
+        return sync.end_now(name,[nonce])
 
 
 class WordInfo(object):
