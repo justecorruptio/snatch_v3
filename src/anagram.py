@@ -25,7 +25,7 @@ class Anagram(object):
 
         fh = open(word_list, 'r')
         for line in fh:
-            line = line.strip()
+            line = line.upper().strip()
             hx = self.hash(line)
             self.data.setdefault(hx, []).append(line)
         fh.close()
